@@ -64,4 +64,9 @@ public class Player : MonoBehaviour
     {
         screenShake.Shake(playerDamageShakeTime, damage * playerDamageShakeScale);
     }
+
+    public bool IsDead()
+    {
+        return health.IsDead();
+    }
 }

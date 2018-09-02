@@ -609,13 +609,16 @@ namespace TeamUtility.IO
 			{
 			case RuntimePlatform.WindowsPlayer:
 			case RuntimePlatform.WindowsEditor:
+				Debug.Log("Using Windows joystick.");
 				_joystickConfiguration = windowsJoystickConfiguration;
 				break;
 			case RuntimePlatform.OSXPlayer:
 			case RuntimePlatform.OSXEditor:
+				Debug.Log("Using OSX joystick.");
 				_joystickConfiguration = osxJoystickConfiguration;
 				break;
 			case RuntimePlatform.LinuxPlayer:
+				Debug.Log("Using Linux joystick.");
 				_joystickConfiguration = linuxJoystickConfiguration;
 				break;
 			default:

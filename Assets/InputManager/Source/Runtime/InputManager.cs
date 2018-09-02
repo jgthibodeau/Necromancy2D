@@ -770,6 +770,7 @@ namespace TeamUtility.IO
 			{
 				Debug.LogError(string.Format("An input configuration named \'{0}\' does not exist", name));
 			}
+            Debug.Log("Set input to " + name);
 		}
 
         public static InputConfiguration GetInputConfiguration(string name)

@@ -4,6 +4,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(FadeAudio))]
 public class GravityWell : MonoBehaviour {
+    private Player player;
+
     public FadeAudio fadeAudio;
 
     public List<Capturable> capturedObjects = new List<Capturable>();
@@ -44,6 +46,7 @@ public class GravityWell : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        player = GetComponentInParent<Player>();
         fadeAudio = GetComponent<FadeAudio>();
         currentRotation = gravityWellBase.transform.rotation;
         previousPosition = transform.position;
@@ -52,16 +55,22 @@ public class GravityWell : MonoBehaviour {
     // Update is called once per frame
 	void Update ()
     {
-        reverse = Util.GetButton("Thrust");
-        captureEnabled = reverse || Util.GetButton("Gravity");
-
-        fadeAudio.enabled = captureEnabled;
-
-        if (alwaysAdjustGravity || !captureEnabled)
+        if (!player.IsDead())
         {
-            AdjustGravityWell();
+            reverse = Util.GetButton("Thrust");
+            captureEnabled = reverse || Util.GetButton("Gravity");
+
+            if (alwaysAdjustGravity || !captureEnabled)
+            {
+                AdjustGravityWell();
+            }
+        }
+        else
+        {
+            captureEnabled = false;
         }
 
+        fadeAudio.enabled = captureEnabled;
 
         captureEffectEnabled.SetActive(captureEnabled && !reverse);
         captureEffectReversed.SetActive(captureEnabled && reverse);

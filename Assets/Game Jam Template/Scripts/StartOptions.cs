@@ -18,8 +18,10 @@ public class StartOptions : MonoBehaviour {
 	private float fastFadeIn = .01f;									//Very short fade time (10 milliseconds) to start playing music immediately without a click/glitch
 	private ShowPanels showPanels;										//Reference to ShowPanels script on UI GameObject, to show and hide panels
 	private Pause pause;
-	
-	void Awake() {
+
+    public GameObject eventSystem;
+
+    void Awake() {
 		//Get a reference to ShowPanels attached to UI object
 		showPanels = GetComponent<ShowPanels> ();
 
@@ -32,9 +34,11 @@ public class StartOptions : MonoBehaviour {
 
 
 	public void StartButtonClicked() {
-		//If changeMusicOnStart is true, fade out volume of music group of AudioMixer by calling FadeDown function of PlayMusic, using length of fadeColorAnimationClip as time. 
-		//To change fade time, change length of animation "FadeToColor"
-		if (changeMusicOnStart) {
+
+        eventSystem.SetActive(false);
+        //If changeMusicOnStart is true, fade out volume of music group of AudioMixer by calling FadeDown function of PlayMusic, using length of fadeColorAnimationClip as time. 
+        //To change fade time, change length of animation "FadeToColor"
+        if (changeMusicOnStart) {
 			playMusic.FadeDown (fadeColorAnimationClip.length);
 		}
 
@@ -76,24 +80,26 @@ public class StartOptions : MonoBehaviour {
 
 		//Hide the main menu UI element
 		showPanels.Back ();
+        eventSystem.SetActive(true);
 
-		//Load the selected scene, by scene index number in build settings
-		SceneManager.LoadScene (sceneToStart);
+        //Load the selected scene, by scene index number in build settings
+        SceneManager.LoadScene (sceneToStart);
 	}
 
 	public void HideDelayed() {
 		//Hide the main menu UI element after fading out menu for start game in scene
 		showPanels.Back ();
-	}
+        eventSystem.SetActive(true);
+    }
 
 	public void StartGameInScene() {
 		//Pause button now works if escape is pressed since we are no longer in Main menu.
 		inMainMenu = false;
 		pause.UnPause ();
 
-		//If changeMusicOnStart is true, fade out volume of music group of AudioMixer by calling FadeDown function of PlayMusic, using length of fadeColorAnimationClip as time. 
-		//To change fade time, change length of animation "FadeToColor"
-		if (changeMusicOnStart) 
+        //If changeMusicOnStart is true, fade out volume of music group of AudioMixer by calling FadeDown function of PlayMusic, using length of fadeColorAnimationClip as time. 
+        //To change fade time, change length of animation "FadeToColor"
+        if (changeMusicOnStart) 
 		{
 			//Wait until game has started, then play new music
 			Invoke ("PlayNewMusic", fadeAlphaAnimationClip.length);
