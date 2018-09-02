@@ -17,6 +17,7 @@ public class VelocityParticles : MonoBehaviour
     public float minLifeTime, maxLifeTime;
 
     public bool play;
+    public bool pause;
 
     // Use this for initialization
     void Start ()
@@ -25,10 +26,23 @@ public class VelocityParticles : MonoBehaviour
         ps = GetComponent<ParticleSystem>();
         mm = ps.main;
         em = ps.emission;
+
+        UpdatePS();
+
+        if (pause)
+        {
+            ps.Pause();
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
+        if (pause)
+        {
+            ps.Pause();
+            return;
+        }
+
         if (play && !ps.isPlaying)
         {
             ps.Play();
@@ -37,8 +51,12 @@ public class VelocityParticles : MonoBehaviour
             ps.Stop();
         }
 
-        float velocity = rb.velocity.magnitude;
+        UpdatePS();
+    }
 
+    void UpdatePS()
+    {
+        float velocity = rb.velocity.magnitude;
         em.rate = Util.ConvertScale(minVelocity, maxVelocity, minEmission, maxEmission, velocity);
         ps.startSize = Util.ConvertScale(minVelocity, maxVelocity, minSize, maxSize, velocity);
         ps.startLifetime = Util.ConvertScale(minVelocity, maxVelocity, minLifeTime, maxLifeTime, velocity);

@@ -524,7 +524,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1223126298756470}
-  m_Mesh: {fileID: 4300000, guid: 9b05105b24a432d479a1bc1b69d78d58, type: 2}
+  m_Mesh: {fileID: 0}
 --- !u!33 &33461163161568182
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -788,7 +788,7 @@ MonoBehaviour:
   maxSize: 0.7
   minLifeTime: 0.1
   maxLifeTime: 0.3
-  play: 0
+  play: 1
 --- !u!114 &114727188134336572
 MonoBehaviour:
   m_ObjectHideFlags: 1

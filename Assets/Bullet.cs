@@ -34,7 +34,7 @@ public class Bullet : MonoBehaviour {
 
         if (rotateToVelocity)
         {
-            rb.rotation = Vector2.Angle(Vector2.up, rb.velocity);
+            rb.rotation = Vector2.SignedAngle(Vector2.up, rb.velocity);
         }
     }
 

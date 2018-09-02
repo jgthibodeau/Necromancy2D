@@ -18,6 +18,8 @@ public class Kill : MonoBehaviour {
 
     public GameObject spawnOnDeath;
 
+    public bool outOfBounds;
+
     // Use this for initialization
     void Start () {
         audioSource = GetComponent<AudioSource> ();
@@ -85,4 +87,13 @@ public class Kill : MonoBehaviour {
         }
 		MyGameManager.instance.RemoveInstance (instanceableType, this.gameObject);
 	}
+
+    public IEnumerator KillInFuture(Kill k, int killTime)
+    {
+        yield return new WaitForSeconds(killTime);
+        if (k != null && outOfBounds)
+        {
+            k.Die();
+        }
+    }
 }

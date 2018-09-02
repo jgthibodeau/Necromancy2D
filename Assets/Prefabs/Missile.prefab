@@ -599,7 +599,7 @@ MonoBehaviour:
   maxSize: 0.7
   minLifeTime: 0.1
   maxLifeTime: 0.3
-  play: 0
+  play: 1
 --- !u!114 &114985772279908034
 MonoBehaviour:
   m_ObjectHideFlags: 1

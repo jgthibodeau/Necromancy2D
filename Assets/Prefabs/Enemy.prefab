@@ -303,7 +303,7 @@ MonoBehaviour:
   maxSize: 0.7
   minLifeTime: 0.1
   maxLifeTime: 0.3
-  play: 0
+  play: 1
 --- !u!114 &114019047496188032
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -366,6 +366,8 @@ MonoBehaviour:
   x: 1
   y: 1
   z: 1
+  frozenRotation: {x: 0, y: 0, z: 0}
+  useStartingRotation: 0
 --- !u!114 &114270553439497186
 MonoBehaviour:
   m_ObjectHideFlags: 1

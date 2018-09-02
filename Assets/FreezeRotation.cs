@@ -7,11 +7,15 @@ public class FreezeRotation : MonoBehaviour {
     public bool y;
     public bool z;
 
-    private Vector3 original;
+    public Vector3 frozenRotation;
+    public bool useStartingRotation;
 
     // Use this for initialization
     void Start () {
-        original = transform.eulerAngles;
+        if (useStartingRotation)
+        {
+            frozenRotation = transform.eulerAngles;
+        }
 	}
 	
 	// Update is called once per frame
@@ -19,15 +23,15 @@ public class FreezeRotation : MonoBehaviour {
         Vector3 current = transform.eulerAngles;
         if (x)
         {
-            current.x = original.x;
+            current.x = frozenRotation.x;
         }
         if (y)
         {
-            current.y = original.y;
+            current.y = frozenRotation.y;
         }
         if (z)
         {
-            current.z = original.z;
+            current.z = frozenRotation.z;
         }
 
         transform.eulerAngles = current;

@@ -32,6 +32,7 @@ public class Enemy : MonoBehaviour
 
     void Start ()
     {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
         controller = GetComponent<EntityController>();
         rigidBody = GetComponent<Rigidbody2D>();
     }

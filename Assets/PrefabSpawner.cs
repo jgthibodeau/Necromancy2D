@@ -2,8 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PrefabSpawner: MonoBehaviour {
-    public List<GameObject> spawnables;
+public class PrefabSpawner: MonoBehaviour
+{
+    [System.Serializable]
+    public struct SpawnWeight
+    {
+        public GameObject spawnable;
+        public int weight;
+    }
+    public SpawnWeight[] spawnWeights;
+    private GameObject[] spawnables;
+    private int[] weights;
+
     public List<GameObject> spawnedObjects;
 
     public int initialSpawnCount;
@@ -12,11 +22,23 @@ public class PrefabSpawner: MonoBehaviour {
     public float coolDown;
     public float currentCoolDown;
 
-    public float maxX, maxY, minX, minY;
+    public float maxX, maxY;
 
     void Start()
     {
-        for(int i=0; i< initialSpawnCount; i++)
+        //public SpawnChance[] spawnableChances;
+        //private GameObject spawnables;
+        //private GameObject weights;
+
+        spawnables = new GameObject[spawnWeights.Length];
+        weights = new int[spawnWeights.Length];
+        for (int i=0; i< spawnWeights.Length; i++)
+        {
+            spawnables[i] = spawnWeights[i].spawnable;
+            weights[i] = spawnWeights[i].weight;
+        }
+
+        for (int i=0; i< initialSpawnCount; i++)
         {
             Spawn(true);
         }
@@ -24,11 +46,17 @@ public class PrefabSpawner: MonoBehaviour {
 
     void Update()
     {
+        Bounds b = new Bounds(transform.position, new Vector3(2 * maxX, 2 * maxY));
+        DebugExtension.DebugBounds(b, Color.green);
+
         spawnedObjects.RemoveAll(item => item == null);
 
         if (currentCoolDown > 0)
         {
             currentCoolDown -= Time.deltaTime;
+        } else
+        {
+            Spawn();
         }
     }
 
@@ -49,9 +77,9 @@ public class PrefabSpawner: MonoBehaviour {
             return false;
         }
 
-        if (index >= spawnables.Count)
+        if (index >= spawnables.Length)
         {
-            index = spawnables.Count - 1;
+            index = spawnables.Length - 1;
         }
         else if (index < 0)
         {
@@ -60,9 +88,9 @@ public class PrefabSpawner: MonoBehaviour {
 
         GameObject inst = GameObject.Instantiate(spawnables[index]);
 
-        Vector3 pos = inst.transform.position;
-        pos.x = Random.Range(minX, maxX);
-        pos.y = Random.Range(minY, maxY);
+        Vector3 pos = transform.position;
+        pos.x += Random.Range(-maxX, maxX);
+        pos.y += Random.Range(-maxY, maxY);
         pos.z = 0;
 
         inst.transform.position = pos;
@@ -84,7 +112,7 @@ public class PrefabSpawner: MonoBehaviour {
 
     private bool Spawn(bool overrideSpawnCheck)
     {
-        int index = Random.Range(0, spawnables.Count);
+        int index = Util.GetRandomWeightedIndex(weights);
         return Spawn(index, overrideSpawnCheck);
     }
 }
