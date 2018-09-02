@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(FadeAudio))]
 public class GravityWell : MonoBehaviour {
-    public OutlineController outlineController;
+    public FadeAudio fadeAudio;
 
     public List<Capturable> capturedObjects = new List<Capturable>();
     public int capturedLayer = 13;
@@ -43,6 +44,7 @@ public class GravityWell : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        fadeAudio = GetComponent<FadeAudio>();
         currentRotation = gravityWellBase.transform.rotation;
         previousPosition = transform.position;
     }
@@ -50,8 +52,10 @@ public class GravityWell : MonoBehaviour {
     // Update is called once per frame
 	void Update ()
     {
-        captureEnabled = Util.GetButton("Gravity") || Util.GetButton("Thrust");
-        reverse = Util.GetButton("Thrust"); ;
+        reverse = Util.GetButton("Thrust");
+        captureEnabled = reverse || Util.GetButton("Gravity");
+
+        fadeAudio.enabled = captureEnabled;
 
         if (alwaysAdjustGravity || !captureEnabled)
         {
@@ -248,8 +252,6 @@ public class GravityWell : MonoBehaviour {
             lbo.go1 = gameObject;
             lbo.go2 = capturable.gameObject;
             lineRenderers.Add(capturable, line);
-
-            //outlineController.AddObject(capturable.gameObject);
         }
     }
 
@@ -270,8 +272,6 @@ public class GravityWell : MonoBehaviour {
             lineRenderers.TryGetValue(capturable, out line);
             lineRenderers.Remove(capturable);
             GameObject.Destroy(line);
-            
-            //outlineController.RemoveObject(capturable.gameObject);
         }
     }
 
@@ -286,8 +286,6 @@ public class GravityWell : MonoBehaviour {
             lineRenderers.TryGetValue(capturable, out line);
             lineRenderers.Remove(capturable);
             GameObject.Destroy(line);
-
-            //outlineController.RemoveObject(capturable.gameObject);
         }
         capturedObjects.Clear();
     }

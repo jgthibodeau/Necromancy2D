@@ -269,7 +269,7 @@ MonoBehaviour:
   capturedLayer:
     serializedVersion: 2
     m_Bits: 8192
-  minCollisionSpeedToDamage: 5
+  minCollisionSpeedToDamage: 20
   damage: 4
 --- !u!114 &114360320988476884
 MonoBehaviour:
@@ -308,3 +308,4 @@ MonoBehaviour:
   volumeDropoffRate: 1
   spawnOnDeath: {fileID: 1275421859751576, guid: aec764d1e0974d34f9158937b9d6dae2,
     type: 2}
+  outOfBounds: 0
