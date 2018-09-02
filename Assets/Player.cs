@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
 
 [RequireComponent(typeof(EntityController))]
+[RequireComponent(typeof(Health))]
 public class Player : MonoBehaviour
 {
+    private LevelManager levelManager;
     private EntityController controller;
+    private Health health;
 
     public bool triggerThrust, stickThrust;
 
@@ -17,10 +20,24 @@ public class Player : MonoBehaviour
 
 	void Start()
     {
+        levelManager = LevelManager.instance;
         controller = GetComponent<EntityController>();
+        health = GetComponent<Health>();
     }
 
-	void Update() {
+    void Update()
+    {
+        if (!health.IsDead())
+        {
+            MovePlayer();
+        } else
+        {
+            KillPlayer();
+        }
+    }
+
+    void MovePlayer()
+    {
         Vector2 moveDirection = new Vector2(Util.GetAxis("Horizontal"), Util.GetAxis("Vertical"));
         controller.moveDirection = moveDirection;
         if (triggerThrust)
@@ -31,5 +48,11 @@ public class Player : MonoBehaviour
         {
             controller.thrust = Mathf.Clamp01(moveDirection.magnitude);
         }
+    }
+
+    void KillPlayer()
+    {
+        controller.thrust = 0f;
+        levelManager.OnPlayerDeath();
     }
 }

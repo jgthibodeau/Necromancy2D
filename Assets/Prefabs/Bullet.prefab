@@ -467,7 +467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletForce: 50
-  bulletDamage: 4
+  bulletDamage: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 1024

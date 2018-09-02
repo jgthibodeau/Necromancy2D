@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Health : MonoBehaviour {
+public class Health : MonoBehaviour
+{
+    private LevelManager levelManager;
     public bool invincible = false;
     public float maxHealth = 100;
 	public float currentHealth;
+
+    public int score;
 
     public GameObject deathParticles;
     public GameObject spawnOnDeath;
@@ -14,10 +18,15 @@ public class Health : MonoBehaviour {
     public Vector3 minSpawnForce = new Vector3 (-1, 1, -1);
     public Vector3 maxSpawnForce = new Vector3(1, 2, 1);
 
+    public bool destroyOnDeath = true;
+
+    private bool alreadyDead = false;
+
     void Start() {
-//		Reset ();
-//		respawnable = GetComponent<Respawnable> ();
-	}
+        //		Reset ();
+        //		respawnable = GetComponent<Respawnable> ();
+        levelManager = LevelManager.instance;
+    }
 
 	public void Hit(float damage, GameObject hitter) {
         TakeDamage(damage);
@@ -37,14 +46,10 @@ public class Health : MonoBehaviour {
 	}
     
 	public void TakeDamage(float damage) {
-        if (invincible)
+        if (invincible || IsDead())
         {
             return;
         }
-
-		if (IsDead ()) {
-			return;
-		}
 
 		Debug.Log ("Taking damage " + damage + " " + currentHealth + " " + gameObject);
 		currentHealth -= damage;
@@ -56,11 +61,13 @@ public class Health : MonoBehaviour {
 	}
 
 	public bool IsDead() {
-		return currentHealth <= 0;
+		return alreadyDead || currentHealth <= 0;
 	}
 
 	public void Kill() {
-		Debug.Log ("Killed " + gameObject);
+        alreadyDead = true;
+
+        Debug.Log ("Killed " + gameObject);
 
         foreach(Collider c in GetComponentsInChildren<Collider>())
         {
@@ -68,9 +75,14 @@ public class Health : MonoBehaviour {
         }
 
         //StartCoroutine("KillAndSpawn");
-        GameObject.Destroy(gameObject);
+        if (destroyOnDeath)
+        {
+            GameObject.Destroy(gameObject);
+        }
 
         SpawnDeathObject();
+
+        levelManager.AddScore(score);
     }
 
     IEnumerator KillAndSpawn()

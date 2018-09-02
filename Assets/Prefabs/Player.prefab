@@ -744,10 +744,13 @@ MonoBehaviour:
   invincible: 1
   maxHealth: 100
   currentHealth: 100
+  score: 0
   deathParticles: {fileID: 0}
-  spawnOnDeath: {fileID: 0}
+  spawnOnDeath: {fileID: 1979306783763504, guid: 58e53fd078f48b741a1ae92547fdea98,
+    type: 2}
   minSpawnForce: {x: -1, y: 1, z: -1}
   maxSpawnForce: {x: 1, y: 2, z: 1}
+  destroyOnDeath: 0
 --- !u!114 &114143695692561718
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -837,7 +840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9556b7b41e5d854b96d543c0f16cb7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineController: {fileID: 0}
+  fadeAudio: {fileID: 0}
   capturedObjects: []
   capturedLayer: 13
   lineRendererPrefab: {fileID: 1038686345434252, guid: 13edeb86d449c7549af7107a91b2010b,
