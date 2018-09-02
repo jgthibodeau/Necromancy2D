@@ -7,7 +7,7 @@ public class MyGameManager : MonoBehaviour
     public static MyGameManager instance = null;
 
 	public int maxInstances = 50;
-    public enum InstanceableType { BULLET, MISSLE, DEBRIS }
+    public enum InstanceableType { BULLET, MISSLE, DEBRIS, PICKUP, EXPLOSION }
     public Dictionary<InstanceableType, List<GameObject>> instanceMap;
 
     int mapIndexes = 0;

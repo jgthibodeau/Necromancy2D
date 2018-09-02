@@ -199,6 +199,8 @@ GameObject:
   - component: {fileID: 4711562628222812}
   - component: {fileID: 58465612728011868}
   - component: {fileID: 114495331460451446}
+  - component: {fileID: 82268019348527064}
+  - component: {fileID: 114362936134873914}
   m_Layer: 14
   m_Name: Gravity Well
   m_TagString: Untagged
@@ -307,7 +309,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1913658900635892}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4107656773319230}
@@ -353,7 +355,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1797978957478654}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.36, z: 0}
+  m_LocalPosition: {x: 0, y: -1.01, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 4107656773319230}
@@ -611,6 +613,102 @@ PolygonCollider2D:
     - - {x: 0, y: 0}
       - {x: -5, y: 5}
       - {x: 5, y: 5}
+--- !u!82 &82268019348527064
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1932623546834476}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24301952, guid: 0ac7fb39e445048d89688f69c2a1839a,
+    type: 2}
+  m_audioClip: {fileID: 8300000, guid: ad8500b8ddeb0b34fbcbf02b6791a338, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!82 &82862674868412928
 AudioSource:
   m_ObjectHideFlags: 1
@@ -741,13 +839,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60d39cfff845554dbf4627e88f2fdb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invincible: 1
+  invincible: 0
   maxHealth: 100
   currentHealth: 100
   score: 0
-  deathParticles: {fileID: 0}
-  spawnOnDeath: {fileID: 1979306783763504, guid: 58e53fd078f48b741a1ae92547fdea98,
+  deathParticles: {fileID: 1979306783763504, guid: 58e53fd078f48b741a1ae92547fdea98,
     type: 2}
+  spawnOnDeath: {fileID: 0}
+  spawnOnDeathChance: 0
   minSpawnForce: {x: -1, y: 1, z: -1}
   maxSpawnForce: {x: 1, y: 2, z: 1}
   destroyOnDeath: 0
@@ -789,6 +888,8 @@ MonoBehaviour:
   stickThrust: 1
   normalDistance: 4
   distanceScale: 2
+  playerDamageShakeTime: 0.1
+  playerDamageShakeScale: 0.05
 --- !u!114 &114248224201855354
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -829,6 +930,22 @@ MonoBehaviour:
   pivotPosition: 0
   radius: 12
   segments: 20
+--- !u!114 &114362936134873914
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1932623546834476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2329e6c61684d3449794c10962cad7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 82268019348527064}
+  minVolume: 0
+  maxVolume: 1
+  volChangeSpeed: 5
+  enabled: 0
 --- !u!114 &114495331460451446
 MonoBehaviour:
   m_ObjectHideFlags: 1

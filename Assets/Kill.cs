@@ -78,22 +78,28 @@ public class Kill : MonoBehaviour {
         {
             Die();
         }
-	}
+    }
 
-	public void Die () {
-        if (spawnOnDeath != null)
+    public void Die()
+    {
+        Die(true);
+    }
+
+    private void Die(bool spawnDeathItem)
+    {
+        if (spawnDeathItem && spawnOnDeath != null)
         {
             GameObject.Instantiate(spawnOnDeath, transform.position, transform.rotation);
         }
-		MyGameManager.instance.RemoveInstance (instanceableType, this.gameObject);
-	}
+        MyGameManager.instance.RemoveInstance(instanceableType, this.gameObject);
+    }
 
-    public IEnumerator KillInFuture(Kill k, int killTime)
+    public IEnumerator KillInFuture(Kill k, int killTime, bool spawnDeathItem)
     {
         yield return new WaitForSeconds(killTime);
         if (k != null && outOfBounds)
         {
-            k.Die();
+            k.Die(spawnDeathItem);
         }
     }
 }

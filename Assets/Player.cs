@@ -12,17 +12,21 @@ public class Player : MonoBehaviour
     private Health health;
 
     public bool triggerThrust, stickThrust;
-
-    //private Tether tether;
-    //private TetherCollider tetherCollider;
+    
     public float normalDistance = 4f;
 	public float distanceScale = 2f;
+
+
+    public float playerDamageShakeTime = 0.25f;
+    public float playerDamageShakeScale = 0.1f;
+    ScreenShake screenShake;
 
 	void Start()
     {
         levelManager = LevelManager.instance;
         controller = GetComponent<EntityController>();
         health = GetComponent<Health>();
+        screenShake = ScreenShake.instance;
     }
 
     void Update()
@@ -54,5 +58,10 @@ public class Player : MonoBehaviour
     {
         controller.thrust = 0f;
         levelManager.OnPlayerDeath();
+    }
+
+    public void TakeDamage(float damage)
+    {
+        screenShake.Shake(playerDamageShakeTime, damage * playerDamageShakeScale);
     }
 }

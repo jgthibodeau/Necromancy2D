@@ -12,7 +12,7 @@ public class Boundary : MonoBehaviour {
         if (k != null)
         {
             k.outOfBounds = true;
-            StartCoroutine(k.KillInFuture(k, killTime));
+            StartCoroutine(k.KillInFuture(k, killTime, false));
         }
     }
 

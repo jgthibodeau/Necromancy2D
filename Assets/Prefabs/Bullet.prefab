@@ -270,7 +270,7 @@ AudioSource:
     type: 2}
   m_audioClip: {fileID: 8300000, guid: bc3f79aa976ad4b4db5b175e859e4592, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.05
+  m_Volume: 0.06
   m_Pitch: 0.8
   Loop: 0
   Mute: 0
@@ -518,7 +518,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityWell: {fileID: 0}
   isCaptured: 0
-  capturedDrag: 2
+  capturedDrag: 4
   regularDrag: 0
   rotateWithGravity: 0
 --- !u!114 &114838897172695516
@@ -540,7 +540,8 @@ MonoBehaviour:
   deathTimeInSeconds: 0
   remainingDeathTime: 0
   volumeDropoffRate: 1
-  spawnOnDeath: {fileID: 0}
+  spawnOnDeath: {fileID: 1909609589594486, guid: 00c2cb41919f00b47bab61afd6fa8652,
+    type: 2}
   outOfBounds: 0
 --- !u!114 &114942740422572436
 MonoBehaviour:

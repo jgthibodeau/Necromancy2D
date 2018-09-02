@@ -13,6 +13,7 @@ public class Health : MonoBehaviour
 
     public GameObject deathParticles;
     public GameObject spawnOnDeath;
+    public float spawnOnDeathChance;
     //public bool keepDeathRotation;
     //public bool keepDeathScale;
     public Vector3 minSpawnForce = new Vector3 (-1, 1, -1);
@@ -46,7 +47,17 @@ public class Health : MonoBehaviour
 	}
     
 	public void TakeDamage(float damage) {
-        if (invincible || IsDead())
+        if (IsDead())
+        {
+            return;
+        }
+
+        if (gameObject.tag == "Player")
+        {
+            gameObject.GetComponent<Player>().TakeDamage(damage);
+        }
+
+        if (invincible)
         {
             return;
         }
@@ -73,38 +84,29 @@ public class Health : MonoBehaviour
         {
             c.enabled = false;
         }
-
-        //StartCoroutine("KillAndSpawn");
+        
         if (destroyOnDeath)
         {
             GameObject.Destroy(gameObject);
         }
 
-        SpawnDeathObject();
+        SpawnDeathObject(deathParticles);
+        if (Random.value < spawnOnDeathChance)
+        {
+            SpawnDeathObject(spawnOnDeath);
+        }
 
         levelManager.AddScore(score);
     }
 
-    IEnumerator KillAndSpawn()
+    public void SpawnDeathObject(GameObject go)
     {
-        yield return null;
-        Debug.Break();
-        yield return null;
-        Debug.Break();
-
-        GameObject.Destroy(gameObject);
-
-        SpawnDeathObject();
-    }
-
-    public void SpawnDeathObject()
-    {
-        if (spawnOnDeath == null)
+        if (go == null)
         {
             return;
         }
 
-        GameObject inst = GameObject.Instantiate(spawnOnDeath, transform.position + Vector3.up * 0.1f, transform.rotation);
+        GameObject inst = GameObject.Instantiate(go, transform.position + Vector3.up * 0.1f, transform.rotation);
 
         if (minSpawnForce.magnitude > 0 && maxSpawnForce.magnitude > 0)
         {

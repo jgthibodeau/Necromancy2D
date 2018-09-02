@@ -7,6 +7,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public Transform player;
+    public Health playerHealth;
     public float distanceToPlayer;
     public float followDistance;
 
@@ -30,9 +31,13 @@ public class Enemy : MonoBehaviour
     public float wanderSpeed, chaseSpeed;
     public float wanderTurnSpeed, chaseTurnSpeed;
 
+    public Vector2 moveDirection;
+    public float thrust;
+
     void Start ()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerHealth = player.GetComponentInChildren<Health>();
         controller = GetComponent<EntityController>();
         rigidBody = GetComponent<Rigidbody2D>();
     }
@@ -62,10 +67,18 @@ public class Enemy : MonoBehaviour
             controller.thrustTurnSpeed = wanderTurnSpeed;
             Wander();
         }
+
+        Move();
 	}
 
     void CheckForPlayer()
     {
+        if (playerHealth.IsDead())
+        {
+            alerted = false;
+            return;
+        }
+
         distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
         if (alerted && distanceToPlayer > alertVisionRadius)
         {
@@ -84,14 +97,14 @@ public class Enemy : MonoBehaviour
 
         targetDir += perpendicularPlayerVelocity * transform.right * fireLead;
         Vector2 direction = targetDir - transform.position;
-        controller.moveDirection = direction;
+        moveDirection = direction;
         if (distanceToPlayer > followDistance)
         {
             currentChangeDirTime = 0;
-            controller.thrust = 1f;
+            thrust = 1f;
         } else
         {
-            controller.thrust = 0f;
+            thrust = 0f;
         }
         if (distanceToPlayer < fireRange)
         {
@@ -113,14 +126,70 @@ public class Enemy : MonoBehaviour
         if (currentChangeDirTime <= 0)
         {
             Vector2 direction = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            controller.moveDirection = direction;
+            moveDirection = direction;
             currentChangeDirTime = Random.Range(minChangeDirTime, maxChangeDirTime);
 
-            controller.thrust = Random.Range(0f, 1f);
+            thrust = Random.Range(0f, 1f);
         }
         else
         {
             currentChangeDirTime -= Time.deltaTime;
+        }
+    }
+
+    public bool avoidAsteroids = true;
+    public LayerMask debrisLayer;
+    public float asteroidCheckRange = 6f;
+    public float asteroidCheckAngle = 0.15f;
+    public float avoidAngle = 10f;
+    void Move()
+    {
+        if (avoidAsteroids)
+        {
+            Avoidance();
+        }
+
+        controller.moveDirection = moveDirection;
+        controller.thrust = thrust;
+    }
+
+    void Avoidance()
+    {
+        //if current path leads us into an asteroid, adjust
+
+        Vector2 forward = moveDirection.normalized;
+        Vector2 movePerpLeftVector = Vector2.Perpendicular(forward);
+        Vector3 left = (forward + movePerpLeftVector * asteroidCheckAngle).normalized;
+        Vector3 right = (forward - movePerpLeftVector * asteroidCheckAngle).normalized;
+        Debug.DrawRay(transform.position, forward * asteroidCheckRange);
+        Debug.DrawRay(transform.position, left * asteroidCheckRange);
+        Debug.DrawRay(transform.position, right * asteroidCheckRange);
+
+        bool forwardAsteroid = Physics2D.Raycast(transform.position, forward, asteroidCheckRange, debrisLayer);
+        bool leftAsteroid = Physics2D.Raycast(transform.position, left, asteroidCheckRange, debrisLayer);
+        bool rightAsteroid = Physics2D.Raycast(transform.position, right, asteroidCheckRange, debrisLayer);
+        bool anyAsteroids = forwardAsteroid || leftAsteroid || rightAsteroid;
+
+        if (anyAsteroids)
+        {
+            bool avoidToLeft = false;
+            if (leftAsteroid == rightAsteroid)
+            {
+                avoidToLeft = (Random.value > 0.5f);
+            }
+            else if (rightAsteroid)
+            {
+                avoidToLeft = true;
+            }
+
+            if (avoidToLeft)
+            {
+                moveDirection = Quaternion.Euler(0, 0, avoidAngle) * moveDirection;
+            }
+            else
+            {
+                moveDirection = Quaternion.Euler(0, 0, -avoidAngle) * moveDirection;
+            }
         }
     }
 

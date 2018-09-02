@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Kill))]
 public class Debris : MonoBehaviour {
     Rigidbody2D rb;
+    public bool collide = true;
     public Vector2 initialVelocityRange;
     public LayerMask capturedLayer;
 
@@ -21,7 +22,7 @@ public class Debris : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (Util.InLayerMask(other.gameObject.layer, capturedLayer) && Util.InLayerMask(other.gameObject.layer, capturedLayer) ||
+        if (!collide || Util.InLayerMask(other.gameObject.layer, capturedLayer) && Util.InLayerMask(other.gameObject.layer, capturedLayer) ||
             other.relativeVelocity.magnitude < minCollisionSpeedToDamage)
         {
             return;

@@ -265,6 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd04f732db07594f8386747fc33a6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collide: 1
   initialVelocityRange: {x: 5, y: 5}
   capturedLayer:
     serializedVersion: 2

@@ -712,7 +712,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityWell: {fileID: 0}
   isCaptured: 0
-  capturedDrag: 2
+  capturedDrag: 4
   regularDrag: 1
   rotateWithGravity: 0
 --- !u!198 &198731017364469314
