@@ -23,7 +23,7 @@ public class GamepadButtons : MonoBehaviour {
 		    && mappings [Application.platform] [inputType].ContainsKey (button)) {
 			map = mappings [Application.platform] [inputType] [button];
 		}
-
+        Debug.Log("converted '" + button+"' to '" + map + "'");
 		return map;
 	}
 
@@ -42,13 +42,13 @@ public class GamepadButtons : MonoBehaviour {
 		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add (joystickbutton + "9", "Right Stick Click");
 		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("0", "Left Stick X");
 		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("1", "Left Stick Y");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("3", "Triggers");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("4", "Right Stick X");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("5", "Right Stick Y");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("6", "D-Pad X");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("7", "D-Pad Y");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("9", "Left Trigger");
-		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("10", "Right Trigger");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("2", "Triggers");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("3", "Right Stick X");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("4", "Right Stick Y");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("5", "D-Pad X");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("6", "D-Pad Y");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("8", "Left Trigger");
+		mappings [RuntimePlatform.WindowsEditor] [GAMEPAD_TYPE.XBOX].Add ("9", "Right Trigger");
 
 		mappings [RuntimePlatform.WindowsPlayer] = mappings [RuntimePlatform.WindowsEditor];
 		mappings [RuntimePlatform.WebGLPlayer] = mappings [RuntimePlatform.WindowsEditor];
