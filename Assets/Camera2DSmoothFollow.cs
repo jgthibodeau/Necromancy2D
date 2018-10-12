@@ -14,10 +14,7 @@ public class Camera2DSmoothFollow : MonoBehaviour {
     public float minSize;
     public float maxSize;
     public float zoomRate;
-
-    public GravityWell gravityWell;
-    public float gravityActiveExtraZoom;
-
+    
     void Start()
     {
         camera = GetComponent<Camera>();
@@ -42,11 +39,6 @@ public class Camera2DSmoothFollow : MonoBehaviour {
         } else
         {
             orthoSize = Util.ConvertScale(minSpeedZoom, maxSpeedZoom, minSize, maxSize, playerSpeed);
-        }
-
-        if (gravityWell.captureEnabled)
-        {
-            orthoSize += gravityActiveExtraZoom;
         }
 
         camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, orthoSize, zoomRate * Time.deltaTime);

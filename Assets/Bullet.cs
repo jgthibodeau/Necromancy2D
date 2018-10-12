@@ -16,6 +16,8 @@ public class Bullet : MonoBehaviour {
 
     public bool rotateToVelocity;
 
+    public float minCollisionSpeedToDamage;
+
     void Start()
     {
         currentIgnoreEnemyLayerTime = ignoreEnemyLayerTime;
@@ -31,6 +33,12 @@ public class Bullet : MonoBehaviour {
         {
             currentIgnoreEnemyLayerTime -= Time.deltaTime;
         }
+    }
+
+	// Update is called once per frame
+	void FixedUpdate ()
+    {
+        //rb.velocity = transform.up * bulletForce;
 
         if (rotateToVelocity)
         {
@@ -38,17 +46,12 @@ public class Bullet : MonoBehaviour {
         }
     }
 
-	// Update is called once per frame
-	void FixedUpdate ()
-    {
-        //rb.velocity = transform.up * bulletForce;
-    }
-
     void OnCollisionEnter2D(Collision2D other)
     {
         if (Util.InLayerMask(other.gameObject.layer, bulletLayer) ||
             (Util.InLayerMask(other.gameObject.layer, capturedLayer) && Util.InLayerMask(other.gameObject.layer, capturedLayer)) ||
-            (currentIgnoreEnemyLayerTime > 0 && Util.InLayerMask(other.gameObject.layer, enemyLayer)))
+            (currentIgnoreEnemyLayerTime > 0 && Util.InLayerMask(other.gameObject.layer, enemyLayer)) ||
+            other.relativeVelocity.magnitude < minCollisionSpeedToDamage)
         {
             return;
         }

@@ -216,7 +216,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1020417409440800}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224308387324510946}
@@ -325,18 +325,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  playerVelocity: {x: 0, y: 0, z: 0}
   playerHealth: {fileID: 0}
-  distanceToPlayer: 6.2138853
-  followDistance: 50
+  playerTarget: {x: 0, y: 0}
+  distanceToPlayer: 0
+  followDistance: 60
+  leadPlayer: 0
+  updatePlayerVelocityRate: 0
   bullet: {fileID: 1316071580563516, guid: d23e972ebac943148b80894d72e2a5f5, type: 2}
   firePosition: {fileID: 4314574525628674}
   fireRandomness: 0.5
-  fireRate: 5
+  fireRate: 3
+  stayAlerted: 1
   visionRadius: 60
   alertVisionRadius: 90
-  fireRange: 60
+  fireRange: 90
   fireLead: 0
-  alerted: 1
+  alerted: 0
   minChangeDirTime: 2
   maxChangeDirTime: 5
   currentChangeDirTime: 0
@@ -459,12 +464,16 @@ MonoBehaviour:
   invincible: 0
   maxHealth: 50
   currentHealth: 50
+  lowDamageScale: 0
+  lowDamageThreshold: 0
   score: 200
-  deathParticles: {fileID: 1979306783763504, guid: 58e53fd078f48b741a1ae92547fdea98,
-    type: 2}
+  alwaysSpawnOnDeath:
+  - {fileID: 1979306783763504, guid: 58e53fd078f48b741a1ae92547fdea98, type: 2}
+  - {fileID: 1864567150326498, guid: 0589eaf0b4c9a84459ab7c9e06d6a949, type: 2}
   spawnOnDeath: {fileID: 1759016072546722, guid: 8250f556cbf60b9419c9f4a43fa19527,
     type: 2}
-  spawnOnDeathChance: 0.25
+  spawnChance: 0.25
+  spawnChanceWhenPlayerLowHealth: 0.8
   minSpawnForce: {x: -1, y: 1, z: -1}
   maxSpawnForce: {x: 1, y: 2, z: 1}
   destroyOnDeath: 1
@@ -967,7 +976,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startRotationX:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 0
       minScalar: 0
       maxCurve:
@@ -1020,7 +1029,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startRotationY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 0
       minScalar: 0
       maxCurve:
@@ -1073,8 +1082,8 @@ ParticleSystem:
         m_RotationOrder: 4
     startRotation:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 6.283185
       minScalar: 0
       maxCurve:
         serializedVersion: 2

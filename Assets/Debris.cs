@@ -22,7 +22,7 @@ public class Debris : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (!collide || Util.InLayerMask(other.gameObject.layer, capturedLayer) && Util.InLayerMask(other.gameObject.layer, capturedLayer) ||
+        if (!collide || (Util.InLayerMask(other.gameObject.layer, capturedLayer) && Util.InLayerMask(other.gameObject.layer, capturedLayer)) ||
             other.relativeVelocity.magnitude < minCollisionSpeedToDamage)
         {
             return;

@@ -9,11 +9,17 @@ public class Health : MonoBehaviour
     public float maxHealth = 100;
 	public float currentHealth;
 
+    public float lowDamageThreshold;
+    public float lowDamageScale;
+
     public int score;
 
-    public GameObject deathParticles;
+    public GameObject[] alwaysSpawnOnDeath;
     public GameObject spawnOnDeath;
-    public float spawnOnDeathChance;
+    [Range(0f, 1f)]
+    public float spawnChance;
+    [Range(0f, 1f)]
+    public float spawnChanceWhenPlayerLowHealth;
     //public bool keepDeathRotation;
     //public bool keepDeathScale;
     public Vector3 minSpawnForce = new Vector3 (-1, 1, -1);
@@ -32,18 +38,9 @@ public class Health : MonoBehaviour
 	public void Hit(float damage, GameObject hitter) {
         TakeDamage(damage);
 	}
-
-	private float previouslyHealedHealth;
-	public bool Heal(float amount) {
-		bool healing = (currentHealth < maxHealth) && (previouslyHealedHealth <= currentHealth);
-
-		if (healing) {
-			currentHealth = Mathf.Clamp (currentHealth + amount, 0, maxHealth);
-		}
-
-		previouslyHealedHealth = currentHealth;
-
-		return healing;
+    
+	public void Heal(float amount) {
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
 	}
     
 	public void TakeDamage(float damage) {
@@ -62,9 +59,11 @@ public class Health : MonoBehaviour
             return;
         }
 
-		Debug.Log ("Taking damage " + damage + " " + currentHealth + " " + gameObject);
+        if (currentHealth < lowDamageThreshold)
+        {
+            damage *= lowDamageScale;
+        }
 		currentHealth -= damage;
-		Debug.Log ("Took damage " + damage + " " + currentHealth + " " + gameObject);
         
 		if (IsDead ()) {
 			Kill ();
@@ -90,8 +89,12 @@ public class Health : MonoBehaviour
             GameObject.Destroy(gameObject);
         }
 
-        SpawnDeathObject(deathParticles);
-        if (Random.value < spawnOnDeathChance)
+        foreach (GameObject go in alwaysSpawnOnDeath)
+        {
+            SpawnDeathObject(go);
+        }
+        float chance = MyGameManager.instance.GetPlayer().IsCriticalHealth() ? spawnChanceWhenPlayerLowHealth : spawnChance;
+        if (Random.value < chance)
         {
             SpawnDeathObject(spawnOnDeath);
         }

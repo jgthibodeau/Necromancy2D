@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4724705881115728}
   - component: {fileID: 33919386410380202}
   - component: {fileID: 23179006345638020}
-  - component: {fileID: 65783015356122036}
   m_Layer: 17
   m_Name: Cube
   m_TagString: Untagged
@@ -56,7 +55,6 @@ GameObject:
   - component: {fileID: 4349246519927162}
   - component: {fileID: 33591049149954536}
   - component: {fileID: 23008463323920156}
-  - component: {fileID: 65616198633988518}
   m_Layer: 17
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -311,30 +309,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.3, y: 1.3}
   m_EdgeRadius: 0
---- !u!65 &65616198633988518
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1650468778197324}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &65783015356122036
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1047418438539520}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114011515309461902
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -347,10 +321,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityWell: {fileID: 0}
+  released: 0
   isCaptured: 0
   capturedDrag: 4
-  regularDrag: 0
+  regularDrag: 1
   rotateWithGravity: 0
+  homingScale: 0
+  homingRadius: 0
+  minVelocityToHome: 0
+  maxAngleToHome: 0
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &114245084046639808
 MonoBehaviour:
   m_ObjectHideFlags: 1

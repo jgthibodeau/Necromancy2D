@@ -131,7 +131,7 @@ Transform:
   m_GameObject: {fileID: 1495979940855618}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 31.934, y: 8.883, z: 0}
-  m_LocalScale: {x: 0.35, y: 0.35, z: 0.5}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4411470784244916}
   - {fileID: 4118333581473160}
@@ -466,7 +466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64af782ede87f5748b65731bbcb5464b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletForce: 50
+  bulletForce: 60
   bulletDamage: 2
   enemyLayer:
     serializedVersion: 2
@@ -480,6 +480,7 @@ MonoBehaviour:
   ignoreEnemyLayerTime: 0.5
   currentIgnoreEnemyLayerTime: 0
   rotateToVelocity: 1
+  minCollisionSpeedToDamage: 20
 --- !u!114 &114668994114469046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -517,10 +518,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityWell: {fileID: 0}
+  released: 0
   isCaptured: 0
   capturedDrag: 4
   regularDrag: 0
   rotateWithGravity: 0
+  homingScale: 40
+  homingRadius: 20
+  minVelocityToHome: 3
+  maxAngleToHome: 65
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &114838897172695516
 MonoBehaviour:
   m_ObjectHideFlags: 1

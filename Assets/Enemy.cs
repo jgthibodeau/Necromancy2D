@@ -4,170 +4,202 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(EntityController))]
-public class Enemy : MonoBehaviour
+[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(Animator))]
+public abstract class Enemy : MonoBehaviour
 {
+    public enum LIFE_STATE { ALIVE, DEAD, RESURECTED, LAUNCHED }
+    public LIFE_STATE lifeState;
+    
+    public GameObject aliveGraphics;
+    public GameObject resurectedGraphics;
+    public GameObject deadGraphics;
+    public GameObject launchedGraphics;
+
     public Transform player;
-    public Health playerHealth;
-    public float distanceToPlayer;
-    public float followDistance;
 
+    public EnemyBehavior enemyBehavior;
+    public AllyBehavior allyBehavior;
+    public LaunchedBehavior launchedBehavior;
     private EntityController controller;
-    public GameObject bullet;
-	public Transform firePosition;
-    public float fireRandomness;
+    private Health health;
 
-    public float fireRate;
-    private float fireDelay;
+    public int enemyLayer;
+    public int allyLayer;
+    public int deadLayer;
+    public int launchedLayer;
 
-	private Rigidbody2D rigidBody;
+    public LayerMask aliveAvoidanceLayers;
+    public LayerMask allyAvoidanceLayers;
 
-    public float visionRadius, alertVisionRadius;
-    public float fireRange, fireLead;
-    public bool alerted;
+    public LayerMask aliveTargetLayers;
+    public LayerMask allyTargetLayers;
 
-    public float minChangeDirTime, maxChangeDirTime;
-    public float currentChangeDirTime;
+    protected LayerMask currentTargetLayers;
 
-    public float wanderSpeed, chaseSpeed;
-    public float wanderTurnSpeed, chaseTurnSpeed;
+    public Animator animator;
+    public AudioSource audioSource;
+    public AudioClip attackClip;
 
-    public Vector2 moveDirection;
-    public float thrust;
+    public GameObject corpseExplosionPrefab;
 
     void Start ()
     {
+        RetreiveScripts();
+
+        enemyBehavior.player = player;
+        allyBehavior.player = player;
+
+        enemyBehavior.enemy = this;
+        allyBehavior.enemy = this;
+        launchedBehavior.enemy = this;
+
+        enemyLayer = LayerMask.NameToLayer("Enemy");
+        allyLayer = LayerMask.NameToLayer("Ally");
+        deadLayer = LayerMask.NameToLayer("Dead");
+        launchedLayer = LayerMask.NameToLayer("Launched");
+    }
+
+    void RetreiveScripts()
+    {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        playerHealth = player.GetComponentInChildren<Health>();
+
+        enemyBehavior = GetComponent<EnemyBehavior>();
+        allyBehavior = GetComponent<AllyBehavior>();
+        launchedBehavior = GetComponent<LaunchedBehavior>();
         controller = GetComponent<EntityController>();
-        rigidBody = GetComponent<Rigidbody2D>();
+        health = GetComponent<Health>();
+        audioSource = GetComponent<AudioSource>();
+        animator = GetComponent<Animator>();
     }
 
-	void Update () {
-        if (fireDelay > 0)
-        {
-            fireDelay -= Time.deltaTime;
-        }
-
-        CheckForPlayer();
-        DebugExtension.DebugCircle(transform.position, Vector3.forward, Color.blue, fireRange);
-        if (alerted)
-        {
-            DebugExtension.DebugCircle(transform.position, Vector3.forward, Color.red, alertVisionRadius);
-            DebugExtension.DebugCircle(transform.position, Vector3.forward, Color.red, visionRadius);
-            controller.speed = chaseSpeed;
-            controller.normalTurnSpeed = chaseTurnSpeed;
-            controller.thrustTurnSpeed = chaseTurnSpeed;
-            ChasePlayer();
-        } else
-        {
-            DebugExtension.DebugCircle(transform.position, Vector3.forward, Color.red, alertVisionRadius);
-            DebugExtension.DebugCircle(transform.position, Vector3.forward, Color.yellow, visionRadius);
-            controller.speed = wanderSpeed;
-            controller.normalTurnSpeed = wanderTurnSpeed;
-            controller.thrustTurnSpeed = wanderTurnSpeed;
-            Wander();
-        }
-
-        Move();
-	}
-
-    void CheckForPlayer()
+    public bool CanResurrect()
     {
-        if (playerHealth.IsDead())
-        {
-            alerted = false;
-            return;
-        }
-
-        distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
-        if (alerted && distanceToPlayer > alertVisionRadius)
-        {
-            alerted = false;
-        } else if (!alerted && distanceToPlayer < visionRadius)
-        {
-            alerted = true;
-        }
+        return lifeState == LIFE_STATE.DEAD;
     }
 
-    void ChasePlayer()
+    public bool CanExplode()
     {
-        Vector3 targetDir = player.transform.position;
-        Vector3 playerVelocity = player.GetComponent<Rigidbody2D>().velocity;
-        float perpendicularPlayerVelocity = Vector3.Dot(playerVelocity, transform.right);
+        return lifeState == LIFE_STATE.DEAD || lifeState == LIFE_STATE.LAUNCHED;
+    }
 
-        targetDir += perpendicularPlayerVelocity * transform.right * fireLead;
-        Vector2 direction = targetDir - transform.position;
-        moveDirection = direction;
-        if (distanceToPlayer > followDistance)
+    public virtual void FixedUpdate() {
+        if (health.currentHealth <= 0)
         {
-            currentChangeDirTime = 0;
-            thrust = 1f;
-        } else
-        {
-            thrust = 0f;
+            lifeState = LIFE_STATE.DEAD;
         }
-        if (distanceToPlayer < fireRange)
+
+        switch(lifeState)
         {
-            AttackPlayer();
+            case LIFE_STATE.ALIVE:
+                gameObject.layer = enemyLayer;
+                currentTargetLayers = aliveTargetLayers;
+
+                aliveGraphics.SetActive(true);
+                resurectedGraphics.SetActive(false);
+                deadGraphics.SetActive(false);
+                launchedGraphics.SetActive(false);
+
+                enemyBehavior.DoBehavior();
+                break;
+            case LIFE_STATE.RESURECTED:
+                gameObject.layer = allyLayer;
+                currentTargetLayers = allyTargetLayers;
+
+                aliveGraphics.SetActive(false);
+                resurectedGraphics.SetActive(true);
+                deadGraphics.SetActive(false);
+                launchedGraphics.SetActive(false);
+
+                allyBehavior.DoBehavior();
+                break;
+            case LIFE_STATE.DEAD:
+                gameObject.layer = deadLayer;
+
+                aliveGraphics.SetActive(false);
+                resurectedGraphics.SetActive(false);
+                deadGraphics.SetActive(true);
+                launchedGraphics.SetActive(false);
+
+                controller.Stop();
+                break;
+            case LIFE_STATE.LAUNCHED:
+                gameObject.layer = launchedLayer;
+
+                aliveGraphics.SetActive(false);
+                resurectedGraphics.SetActive(false);
+                deadGraphics.SetActive(false);
+                launchedGraphics.SetActive(true);
+
+                launchedBehavior.DoBehavior();
+                break;
         }
     }
 
-    void AttackPlayer()
+    public void Resurrect(SummonSpot summonSpot)
     {
-        if (fireDelay <= 0)
+        RetreiveScripts();
+
+        lifeState = LIFE_STATE.RESURECTED;
+        health.currentHealth = health.maxHealth;
+        SetSummonSpot(summonSpot);
+    }
+
+    public void SetSummonSpot(SummonSpot summonSpot)
+    {
+        if (allyBehavior.summonSpot != null)
         {
-            Fire();
+            allyBehavior.summonSpot.SetEnemy(null);
+        }
+        allyBehavior.summonSpot = summonSpot;
+    }
+
+    public void Launch(Vector2 force)
+    {
+        lifeState = LIFE_STATE.LAUNCHED;
+        launchedBehavior.launched = true;
+        launchedBehavior.launchForce = force;
+
+        if (allyBehavior.summonSpot != null)
+        {
+            allyBehavior.summonSpot.enemy = null;
+            allyBehavior.summonSpot = null;
         }
     }
 
-    void Wander()
+    public void Explode()
     {
-        //move randomly
-        if (currentChangeDirTime <= 0)
-        {
-            Vector2 direction = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            moveDirection = direction;
-            currentChangeDirTime = Random.Range(minChangeDirTime, maxChangeDirTime);
-
-            thrust = Random.Range(0f, 1f);
-        }
-        else
-        {
-            currentChangeDirTime -= Time.deltaTime;
-        }
+        GameObject.Instantiate(corpseExplosionPrefab, transform.position, transform.rotation);
+        GameObject.Destroy(gameObject);
     }
 
-    public bool avoidAsteroids = true;
-    public LayerMask debrisLayer;
-    public float asteroidCheckRange = 6f;
-    public float asteroidCheckAngle = 0.15f;
-    public float avoidAngle = 10f;
-    void Move()
+    public virtual void Attack()
     {
-        if (avoidAsteroids)
-        {
-            Avoidance();
-        }
-
-        controller.moveDirection = moveDirection;
-        controller.thrust = thrust;
+        animator.SetTrigger("Attack");
+        //audioSource.PlayOneShot(attackClip);
     }
 
-    void Avoidance()
-    {
-        //if current path leads us into an asteroid, adjust
+    public virtual void StartAttack() { }
 
-        Vector2 forward = moveDirection.normalized;
+    public virtual void StopAttack() { }
+
+    public float avoidanceAngle, avoidanceRange;
+
+    public Vector2 Avoidance(Vector2 direction)
+    {
+        LayerMask avoidLayers = lifeState == LIFE_STATE.ALIVE ? aliveAvoidanceLayers : allyAvoidanceLayers;
+
+        Vector2 forward = direction.normalized;
         Vector2 movePerpLeftVector = Vector2.Perpendicular(forward);
-        Vector3 left = (forward + movePerpLeftVector * asteroidCheckAngle).normalized;
-        Vector3 right = (forward - movePerpLeftVector * asteroidCheckAngle).normalized;
-        Debug.DrawRay(transform.position, forward * asteroidCheckRange);
-        Debug.DrawRay(transform.position, left * asteroidCheckRange);
-        Debug.DrawRay(transform.position, right * asteroidCheckRange);
+        Vector3 left = (forward + movePerpLeftVector * avoidanceAngle).normalized;
+        Vector3 right = (forward - movePerpLeftVector * avoidanceAngle).normalized;
+        Debug.DrawRay(transform.position, forward * avoidanceRange);
+        Debug.DrawRay(transform.position, left * avoidanceRange);
+        Debug.DrawRay(transform.position, right * avoidanceRange);
 
-        bool forwardAsteroid = Physics2D.Raycast(transform.position, forward, asteroidCheckRange, debrisLayer);
-        bool leftAsteroid = Physics2D.Raycast(transform.position, left, asteroidCheckRange, debrisLayer);
-        bool rightAsteroid = Physics2D.Raycast(transform.position, right, asteroidCheckRange, debrisLayer);
+        bool forwardAsteroid = Physics2D.Raycast(transform.position, forward, avoidanceRange, avoidLayers);
+        bool leftAsteroid = Physics2D.Raycast(transform.position, left, avoidanceRange, avoidLayers);
+        bool rightAsteroid = Physics2D.Raycast(transform.position, right, avoidanceRange, avoidLayers);
         bool anyAsteroids = forwardAsteroid || leftAsteroid || rightAsteroid;
 
         if (anyAsteroids)
@@ -184,24 +216,14 @@ public class Enemy : MonoBehaviour
 
             if (avoidToLeft)
             {
-                moveDirection = Quaternion.Euler(0, 0, avoidAngle) * moveDirection;
+                direction = Quaternion.Euler(0, 0, avoidanceAngle) * direction;
             }
             else
             {
-                moveDirection = Quaternion.Euler(0, 0, -avoidAngle) * moveDirection;
+                direction = Quaternion.Euler(0, 0, -avoidanceAngle) * direction;
             }
         }
-    }
 
-	void Fire() {
-        fireDelay = fireRate;
-
-        Vector3 position = firePosition.position;
-        position.x += Random.Range(-fireRandomness, fireRandomness);
-        position.y += Random.Range(-fireRandomness, fireRandomness);
-        GameObject newBullet = GameObject.Instantiate (bullet, position, transform.rotation);
-        newBullet.GetComponent<Rigidbody2D>().rotation = rigidBody.rotation;
-        newBullet.GetComponent<Rigidbody2D>().velocity = rigidBody.velocity;
-        //newBullet.GetComponent<Rigidbody2D> ().AddForce (newBullet.transform.up * bulletForce, ForceMode2D.Impulse);
+        return direction;
     }
 }

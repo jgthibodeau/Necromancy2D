@@ -5,12 +5,15 @@ using UnityEngine;
 public class MyGameManager : MonoBehaviour
 {
     public static MyGameManager instance = null;
+    private Player player;
 
 	public int maxInstances = 50;
     public enum InstanceableType { BULLET, MISSLE, DEBRIS, PICKUP, EXPLOSION }
     public Dictionary<InstanceableType, List<GameObject>> instanceMap;
 
     int mapIndexes = 0;
+
+    public bool isPaused = false;
 
     public int GetIndex()
     {
@@ -21,7 +24,9 @@ public class MyGameManager : MonoBehaviour
 		if (instance == null) {
 			instance = this;
             instanceMap = new Dictionary<InstanceableType, List<GameObject>> ();
-		} else if (instance != this) {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+
+        } else if (instance != this) {
 			Destroy (gameObject);
 		}
     }
@@ -55,5 +60,15 @@ public class MyGameManager : MonoBehaviour
             GameObject.Destroy(instanceObj);
         }
 	}
+
+    public Player GetPlayer()
+    {
+        return player;
+    }
+
+    public bool CanPause()
+    {
+        return !LevelManager.instance.IsPlayerDead();
+    }
 }
 

@@ -129,7 +129,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 2
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -292,7 +292,7 @@ MonoBehaviour:
   capturedLayer:
     serializedVersion: 2
     m_Bits: 8192
-  minCollisionSpeedToDamage: 20
+  minCollisionSpeedToDamage: 40
   damage: 2
 --- !u!114 &114860874658580478
 MonoBehaviour:
@@ -306,7 +306,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityWell: {fileID: 0}
+  released: 0
   isCaptured: 0
-  capturedDrag: 2
-  regularDrag: 0
+  capturedDrag: 4
+  regularDrag: 0.5
   rotateWithGravity: 0
+  homingScale: 40
+  homingRadius: 20
+  minVelocityToHome: 3
+  maxAngleToHome: 65
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 1024

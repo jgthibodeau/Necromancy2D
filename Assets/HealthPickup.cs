@@ -28,14 +28,8 @@ public class HealthPickup : MonoBehaviour
 
         GameObject hit = other.gameObject;
         Health health = hit.GetComponent<Health>();
-
-        if (health.IsDead())
-        {
-            return;
-        }
-
-        if (health != null)
-        {
+        
+        if (health != null && !health.IsDead()) {
             //Debug.Log("hitting " + health);
             health.Heal(amount);
             GetComponent<Kill>().Die();

@@ -32,13 +32,13 @@ TagManager:
   - Camera
   - Debris
   - Captured
-  - Gravity
+  - SummonCircle
   - Wall
   - KillZone
   - Pickup
-  - 
-  - 
-  - 
+  - Ally
+  - Dead
+  - Launched
   - 
   - 
   - 

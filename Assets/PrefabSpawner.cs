@@ -24,6 +24,10 @@ public class PrefabSpawner: MonoBehaviour
 
     public float maxX, maxY;
 
+    public bool canSpawnInCamera;
+
+    private bool spawning;
+
     void Start()
     {
         //public SpawnChance[] spawnableChances;
@@ -54,28 +58,28 @@ public class PrefabSpawner: MonoBehaviour
         if (currentCoolDown > 0)
         {
             currentCoolDown -= Time.deltaTime;
-        } else
+        } else if (CanSpawn())
         {
-            Spawn();
+            Spawn(false);
         }
     }
 
     public bool CanSpawn()
     {
-        return currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn;
+        //Debug.Log("spawning " + spawning + ", cooldown ok " + (currentCoolDown <= 0) + ", count ok " + (spawnedObjects.Count < maxToSpawn) + ", can spawn "+(!spawning && currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn));
+        return !spawning && currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn;
     }
 
-    public bool Spawn(int index)
+    private void Spawn(bool overrideSpawnCheck)
     {
-        return Spawn(index, false);
+        int index = Util.GetRandomWeightedIndex(weights);
+        StartCoroutine(Spawn(index, overrideSpawnCheck));
     }
-
-    private bool Spawn(int index, bool overrideSpawnCheck)
+    
+    private IEnumerator Spawn(int index, bool overrideSpawnCheck)
     {
-        if (!overrideSpawnCheck && !CanSpawn())
-        {
-            return false;
-        }
+        spawning = true;
+        currentCoolDown = coolDown;
 
         if (index >= spawnables.Length)
         {
@@ -86,33 +90,33 @@ public class PrefabSpawner: MonoBehaviour
             index = 0;
         }
 
-        GameObject inst = GameObject.Instantiate(spawnables[index]);
+        Vector3 pos;
+        do
+        {
+            pos = transform.position;
+            pos.x += Random.Range(-maxX, maxX);
+            pos.y += Random.Range(-maxY, maxY);
+            pos.z = 0;
+            yield return null;
+        } while (!IsValidSpawnLocation(pos, overrideSpawnCheck));
+        
+        Vector3 rot = new Vector3(0, 0, Random.Range(0, 360));
+        GameObject inst = GameObject.Instantiate(spawnables[index], pos, Quaternion.Euler(rot));
 
-        Vector3 pos = transform.position;
-        pos.x += Random.Range(-maxX, maxX);
-        pos.y += Random.Range(-maxY, maxY);
-        pos.z = 0;
-
-        inst.transform.position = pos;
-        Vector3 rot = inst.transform.eulerAngles;
-        rot.z = Random.Range(0, 360);
-        inst.transform.eulerAngles = rot;
+        Debug.Log("spawned " + inst);
 
         spawnedObjects.Add(inst);
-
-        currentCoolDown = coolDown;
-
-        return true;
+        
+        spawning = false;
     }
 
-    public bool Spawn()
+    public bool IsValidSpawnLocation(Vector3 pos, bool overrideSpawnCheck)
     {
-        return Spawn(false);
-    }
-
-    private bool Spawn(bool overrideSpawnCheck)
-    {
-        int index = Util.GetRandomWeightedIndex(weights);
-        return Spawn(index, overrideSpawnCheck);
+        if (overrideSpawnCheck || canSpawnInCamera)
+        {
+            return true;
+        }
+        Vector3 cameraPoint = Camera.main.WorldToViewportPoint(pos);
+        return cameraPoint.x < -0.1f || cameraPoint.x > 1.1f || cameraPoint.y < -0.1f && cameraPoint.y > 1.1f;
     }
 }

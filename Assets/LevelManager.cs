@@ -48,4 +48,9 @@ public class LevelManager : MonoBehaviour
             menuController.GameOver(scoreText.text);
         }
     }
+
+    public bool IsPlayerDead()
+    {
+        return playerDead;
+    }
 }

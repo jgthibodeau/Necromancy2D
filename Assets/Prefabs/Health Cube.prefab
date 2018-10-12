@@ -363,10 +363,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityWell: {fileID: 0}
+  released: 0
   isCaptured: 0
   capturedDrag: 4
-  regularDrag: 0
+  regularDrag: 1
   rotateWithGravity: 0
+  homingScale: 0
+  homingRadius: 0
+  minVelocityToHome: 0
+  maxAngleToHome: 0
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &114970735228854616
 MonoBehaviour:
   m_ObjectHideFlags: 1
