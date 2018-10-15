@@ -17,6 +17,7 @@ public abstract class Enemy : MonoBehaviour
     public GameObject launchedGraphics;
 
     public Transform player;
+    public SummonCircle summonCircle;
 
     public EnemyBehavior enemyBehavior;
     public AllyBehavior allyBehavior;
@@ -43,16 +44,9 @@ public abstract class Enemy : MonoBehaviour
 
     public GameObject corpseExplosionPrefab;
 
-    void Start ()
+    void Awake ()
     {
         RetreiveScripts();
-
-        enemyBehavior.player = player;
-        allyBehavior.player = player;
-
-        enemyBehavior.enemy = this;
-        allyBehavior.enemy = this;
-        launchedBehavior.enemy = this;
 
         enemyLayer = LayerMask.NameToLayer("Enemy");
         allyLayer = LayerMask.NameToLayer("Ally");
@@ -60,10 +54,17 @@ public abstract class Enemy : MonoBehaviour
         launchedLayer = LayerMask.NameToLayer("Launched");
     }
 
+    void Start()
+    {
+        player = MyGameManager.instance.GetPlayer().transform;
+
+        enemyBehavior.enemy = this;
+        allyBehavior.enemy = this;
+        launchedBehavior.enemy = this;
+    }
+
     void RetreiveScripts()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-
         enemyBehavior = GetComponent<EnemyBehavior>();
         allyBehavior = GetComponent<AllyBehavior>();
         launchedBehavior = GetComponent<LaunchedBehavior>();
@@ -141,7 +142,8 @@ public abstract class Enemy : MonoBehaviour
         RetreiveScripts();
 
         lifeState = LIFE_STATE.RESURECTED;
-        health.currentHealth = health.maxHealth;
+        health.currentHealth = health.resurrectHealth;
+        health.maxHealth = health.resurrectHealth;
         SetSummonSpot(summonSpot);
     }
 
@@ -165,6 +167,11 @@ public abstract class Enemy : MonoBehaviour
             allyBehavior.summonSpot.enemy = null;
             allyBehavior.summonSpot = null;
         }
+
+        if (summonCircle != null)
+        {
+            summonCircle.Remove(this);
+        }
     }
 
     public void Explode()
@@ -176,7 +183,7 @@ public abstract class Enemy : MonoBehaviour
     public virtual void Attack()
     {
         animator.SetTrigger("Attack");
-        //audioSource.PlayOneShot(attackClip);
+        audioSource.Play();
     }
 
     public virtual void StartAttack() { }

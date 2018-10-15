@@ -81,8 +81,14 @@ public class Util : MonoBehaviour {
 
     public static Vector3 MouseInWorld()
     {
+        Camera camera = Camera.main;
         Vector3 mouse = TeamUtility.IO.InputManager.mousePosition;
-        mouse = Camera.main.ScreenToWorldPoint(mouse);
+        if (!camera.orthographic)
+        {
+            //mouse.z = camera.farClipPlane;
+            mouse.z = -camera.transform.position.z;
+        }
+        mouse = camera.ScreenToWorldPoint(mouse);
         mouse.z = 0;
         return mouse;
     }
@@ -222,5 +228,17 @@ public class Util : MonoBehaviour {
         g.SetKeys(clrs, alphas);
 
         return g;
+    }
+
+    public static Mesh CopyMesh(Mesh mesh)
+    {
+        Mesh newmesh = new Mesh();
+        newmesh.vertices = mesh.vertices;
+        newmesh.triangles = mesh.triangles;
+        newmesh.uv = mesh.uv;
+        newmesh.normals = mesh.normals;
+        newmesh.colors = mesh.colors;
+        newmesh.tangents = mesh.tangents;
+        return newmesh;
     }
 }

@@ -49,14 +49,14 @@ public class Explosion : MonoBehaviour
 
 			if (splashEffects)
             {
-                Enemy enemy = collider.gameObject.GetComponent<Enemy>();
+                Enemy enemy = collider.gameObject.GetComponentInParent<Enemy>();
                 if (enemy != null && enemy.CanExplode())
                 {
                     enemy.Explode();
                 }
                 else
                 {
-                    Health health = collider.gameObject.GetComponent<Health>();
+                    Health health = collider.gameObject.GetComponentInParent<Health>();
                     if (health != null && !healths.Contains(health))
                     {
                         healths.Add(health);

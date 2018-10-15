@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(FadeAudio))]
 public class SummonCircle : MonoBehaviour {
     private Player player;
     public Image skeletonSummonImage;
+    public TextMeshProUGUI text;
 
     public FadeAudio fadeAudio;
 
@@ -31,6 +33,7 @@ public class SummonCircle : MonoBehaviour {
     private bool summoningSkeletons;
     public float minSkeletonRadius, maxSkeletonRadius;
     public GameObject skeletonPrefab;
+    public AudioSource summonSkeletonsAudioSource;
 
     public GameObject corpseExplosionPrefab;
     
@@ -118,7 +121,7 @@ public class SummonCircle : MonoBehaviour {
         {
             i = 0;
         }
-        Debug.Log("Settings summon spot group to " + i + " " + attack);
+        //Debug.Log("Settings summon spot group to " + i + " " + attack);
 
         SummonSpotRow[] newGroup;
         if (attack)
@@ -431,9 +434,22 @@ public class SummonCircle : MonoBehaviour {
         //}
     }
 
+    int SummonCount()
+    {
+        int count = 0;
+        foreach(SummonSpotRow row in currentSummonSpotGroup)
+        {
+            count += row.EnemyCount();
+        }
+        return count;
+    }
+
     // Update is called once per frame
     void Update ()
     {
+        string summonText = SummonCount() + " / " + maxSummonsPerGroup[0];
+        text.SetText(summonText);
+
         //GenerateSummonSpots();
         MoveSummonCircle();
 
@@ -509,6 +525,7 @@ public class SummonCircle : MonoBehaviour {
             currentTimeToSummonSkeletons -= Time.deltaTime;
         } else
         {
+            summonSkeletonsAudioSource.Play();
             for (int i=0; i< numberSkeletonsToSummon; i++)
             {
                 Vector2 position = (Vector2)transform.position + Random.insideUnitCircle * Random.Range(minSkeletonRadius, maxSkeletonRadius);
@@ -579,6 +596,15 @@ public class SummonCircle : MonoBehaviour {
             summons.Add(enemy);
             summonSpot.enemy = enemy;
             enemy.Resurrect(summonSpot);
+            enemy.summonCircle = this;
+        }
+    }
+
+    public void Remove(Enemy enemy)
+    {
+        if (summons.Contains(enemy))
+        {
+            summons.Remove(enemy);
         }
     }
 

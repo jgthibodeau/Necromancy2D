@@ -44,6 +44,11 @@ public class SummonSpotRow : MonoBehaviour
         return summonSpots.Length;
     }
 
+    public int EnemyCount()
+    {
+        return filledSummonSpotCount;
+    }
+
     public void RefreshSummonSpotCount()
     {
         emptySummonSpotCount = 0;

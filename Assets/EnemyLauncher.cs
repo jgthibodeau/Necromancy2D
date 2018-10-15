@@ -5,6 +5,8 @@ using UnityEngine;
 public class EnemyLauncher : MonoBehaviour {
     public LaunchLineRenderer launchLineRenderer;
 
+    public float launchKillTime = 30f;
+
     public Enemy enemyToLaunch;
     public float launchSpeedScale;
     public LayerMask launchableLayers;
@@ -27,7 +29,7 @@ public class EnemyLauncher : MonoBehaviour {
         mouse = Util.MouseInWorld();
         DebugExtension.DebugWireSphere(mouse, Color.yellow, mouseRadius);
 
-        if (enemyToLaunch != null)
+        if (HasEnemy())
         {
             Time.timeScale = launchTimeScale;
             distance = Vector2.Distance(enemyToLaunch.transform.position, mouse);
@@ -68,10 +70,19 @@ public class EnemyLauncher : MonoBehaviour {
         //}
     }
 
+    public bool HasEnemy()
+    {
+        return enemyToLaunch != null;
+    }
+
     public void LaunchEnemy()
     {
-        if (enemyToLaunch != null)
+        if (HasEnemy())
         {
+            Kill kill = enemyToLaunch.gameObject.AddComponent<Kill>();
+            kill.lifeTimeInSeconds = launchKillTime;
+            kill.Reset();
+
             Vector2 force = (enemyToLaunch.transform.position - mouse) * launchSpeedScale;
             enemyToLaunch.Launch(force);
             enemyToLaunch = null;
@@ -93,7 +104,7 @@ public class EnemyLauncher : MonoBehaviour {
             gradient = Util.Lerp(medForce, bigForce, percent);
         }
         
-        if (enemyToLaunch != null)
+        if (HasEnemy())
         {
             //Vector3 enemyPoint = enemyToLaunch.transform.position;
             Vector3 enemyPoint = ((enemyToLaunch.transform.position - mouse) * enemyPointScale + enemyToLaunch.transform.position);

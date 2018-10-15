@@ -24,7 +24,6 @@ public class MyGameManager : MonoBehaviour
 		if (instance == null) {
 			instance = this;
             instanceMap = new Dictionary<InstanceableType, List<GameObject>> ();
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         } else if (instance != this) {
 			Destroy (gameObject);
@@ -63,6 +62,10 @@ public class MyGameManager : MonoBehaviour
 
     public Player GetPlayer()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        }
         return player;
     }
 

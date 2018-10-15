@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityStandardAssets.Characters.ThirdPerson;
 
 [RequireComponent(typeof(EntityController))]
@@ -42,7 +43,8 @@ public class Player : MonoBehaviour
         if (!health.IsDead())
         {
             Aim();
-            if (!aiming)
+            //if (!aiming)
+            if (!enemyLauncher.HasEnemy())
             {
                 Attack();
             }
@@ -71,6 +73,55 @@ public class Player : MonoBehaviour
         {
             launching = false;
             enemyLauncher.LaunchEnemy();
+        }
+    }
+
+    private bool dashing;
+    public float dashTime;
+    public float dashRechargeTime;
+    public float dashSpeed;
+    public float normalSpeed;
+    private float remainingDashTime;
+    private float remainingDashRechargeTime;
+    public ParticleSystem dashEffect;
+    public GameObject dashBar;
+    public Image dashBarFill;
+    void Dash()
+    {
+        if (!dashing)
+        {
+            if (remainingDashRechargeTime > 0)
+            {
+                dashBar.SetActive(true);
+                dashBarFill.fillAmount = 1f - remainingDashRechargeTime / dashRechargeTime;
+                dashEffect.Stop();
+                remainingDashRechargeTime -= Time.deltaTime;
+            } else  if (Util.GetButtonDown("Dash"))
+            {
+                dashBar.SetActive(false);
+                dashEffect.Play();
+                dashing = true;
+                remainingDashTime = dashTime;
+                controller.speed = dashSpeed;
+                controller.NormalizeMoveDirection();
+            } else
+            {
+                dashBar.SetActive(false);
+            }
+        } else
+        {
+            dashBar.SetActive(true);
+            dashBarFill.fillAmount = 0f;
+
+            if (remainingDashTime > 0)
+            {
+                remainingDashTime -= Time.deltaTime;
+            } else
+            {
+                dashing = false;
+                remainingDashRechargeTime = dashRechargeTime;
+                controller.speed = normalSpeed;
+            }
         }
     }
 
@@ -130,8 +181,13 @@ public class Player : MonoBehaviour
     {
         if (!attacking)
         {
-            Vector2 moveDirection = new Vector2(Util.GetAxis("Horizontal"), Util.GetAxis("Vertical"));
-            controller.SetMoveDirection(moveDirection);
+            Dash();
+            if (!dashing)
+            {
+                Vector2 moveDirection = new Vector2(Util.GetAxis("Horizontal"), Util.GetAxis("Vertical"));
+                controller.SetMoveDirection(moveDirection);
+                controller.speed = normalSpeed;
+            }
 
             //if mouse outside of summon area that is populated with minions
             if (!summonCircle.IsMouseInSummonSpots() && !aiming)

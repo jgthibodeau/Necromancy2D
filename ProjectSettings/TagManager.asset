@@ -26,20 +26,20 @@ TagManager:
   - UI
   - 
   - 
-  - Bullet
+  - Explosion
   - Player
   - Enemy
   - Camera
   - Debris
   - Captured
   - SummonCircle
-  - Wall
+  - Obstacle
   - KillZone
   - Pickup
   - Ally
   - Dead
   - Launched
-  - 
+  - Ground
   - 
   - 
   - 

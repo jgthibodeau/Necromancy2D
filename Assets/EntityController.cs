@@ -14,13 +14,30 @@ public class EntityController : MonoBehaviour
 
 	public float speed = 6f;
     public float turnSpeed = 5f;
+    public float speedScale = 1f;
 
-	private Rigidbody2D rb;
+    public float avoidanceDistance = 3f;
+    public LayerMask avoidanceLayers;
+
+
+    private Rigidbody2D rb;
 
     private Vector2 moveDirection = Vector2.zero;
     private Quaternion originalGraphicsBaseRot;
     private Vector3 originalGraphicsLocalRot;
     private Quaternion axisTilt;
+    
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Start()
+    {
+        originalGraphicsBaseRot = graphicsBase.rotation;
+        originalGraphicsLocalRot = graphics.localEulerAngles;
+        axisTilt = graphics.rotation;
+    }
 
     public void SetMoveDirection(Vector2 newDir)
     {
@@ -28,19 +45,22 @@ public class EntityController : MonoBehaviour
         moveDirection = Vector3.ClampMagnitude(moveDirection, 1);
     }
 
-	void Start()
+    public void NormalizeMoveDirection()
     {
-        originalGraphicsBaseRot = graphicsBase.rotation;
-        originalGraphicsLocalRot = graphics.localEulerAngles;
-        axisTilt = graphics.rotation;
-
-        rb = GetComponent<Rigidbody2D>();
+        if (moveDirection.magnitude > 0)
+        {
+            moveDirection = moveDirection.normalized;
+        } else
+        {
+            moveDirection = transform.up.normalized;
+        }
     }
 
     public void Stop()
     {
         this.moveDirection = Vector2.zero;
         this.speed = 0;
+        this.speedScale = 1f;
     }
 
     void FixedUpdate()
@@ -62,10 +82,10 @@ public class EntityController : MonoBehaviour
         //rb.MoveRotation(Mathf.LerpAngle(rb.rotation, angle, turnSpeed * Time.deltaTime));
         //rb.MovePosition(rb.position + moveDirection * speed * Time.fixedDeltaTime);
 
-        rb.velocity = (moveDirection * Time.fixedDeltaTime * speed);
+        rb.velocity = (moveDirection * Time.fixedDeltaTime * speed * speedScale);
         //rb.AddForce(moveDirection * speed);
     }
-
+    
     public void RotateTowardsMotion()
     {
         Vector3 velocity = GetComponent<Rigidbody2D>().velocity;
@@ -92,25 +112,6 @@ public class EntityController : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
         Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
         transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * turnSpeed);
-
-        //rotate graphics z only
-        //graphics.eulerAngles = originalGraphicsRot;
-        //Vector3 newGraphicsRot = graphics.localEulerAngles;
-        //newGraphicsRot.y = transform.eulerAngles.z;
-        //graphics.localEulerAngles = newGraphicsRot;
-
-        //graphicsRot.y = transform.eulerAngles.z;
-        //graphics.eulerAngles = graphicsRot;
-
-        //graphics.localRotation = Quaternion.Euler(0, transform.eulerAngles.z, 0) * axisTilt;
-
-        //Vector3 newLocal = originalGraphicsLocalRot;
-        //newLocal.y = transform.eulerAngles.z;
-        //graphics.localEulerAngles = newLocal;
-
-        //Vector3 newRot = graphics.eulerAngles;
-        //newRot.z = 0;
-        //graphics.eulerAngles = newRot;
 
         graphicsBase.rotation = originalGraphicsBaseRot;
         originalGraphicsLocalRot.y = -transform.eulerAngles.z;

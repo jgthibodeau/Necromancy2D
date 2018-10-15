@@ -22,21 +22,19 @@ public class PrefabSpawner: MonoBehaviour
     public float coolDown;
     public float currentCoolDown;
 
-    public float maxX, maxY;
+    public float minSpawnRadius, maxSpawnRadius;
 
     public bool canSpawnInCamera;
 
     private bool spawning;
 
+    public bool active;
+
     void Start()
     {
-        //public SpawnChance[] spawnableChances;
-        //private GameObject spawnables;
-        //private GameObject weights;
-
         spawnables = new GameObject[spawnWeights.Length];
         weights = new int[spawnWeights.Length];
-        for (int i=0; i< spawnWeights.Length; i++)
+        for (int i = 0; i < spawnWeights.Length; i++)
         {
             spawnables[i] = spawnWeights[i].spawnable;
             weights[i] = spawnWeights[i].weight;
@@ -50,10 +48,10 @@ public class PrefabSpawner: MonoBehaviour
 
     void Update()
     {
-        Bounds b = new Bounds(transform.position, new Vector3(2 * maxX, 2 * maxY));
-        DebugExtension.DebugBounds(b, Color.green);
+        DebugExtension.DebugWireSphere(transform.position, Color.blue, minSpawnRadius);
+        DebugExtension.DebugWireSphere(transform.position, Color.blue, maxSpawnRadius);
 
-        spawnedObjects.RemoveAll(item => item == null);
+        CleanNullSpawns();
 
         if (currentCoolDown > 0)
         {
@@ -64,10 +62,15 @@ public class PrefabSpawner: MonoBehaviour
         }
     }
 
+    void CleanNullSpawns()
+    {
+        spawnedObjects.RemoveAll(item => item == null);
+    }
+
     public bool CanSpawn()
     {
         //Debug.Log("spawning " + spawning + ", cooldown ok " + (currentCoolDown <= 0) + ", count ok " + (spawnedObjects.Count < maxToSpawn) + ", can spawn "+(!spawning && currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn));
-        return !spawning && currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn;
+        return active && !spawning && currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn;
     }
 
     private void Spawn(bool overrideSpawnCheck)
@@ -90,23 +93,21 @@ public class PrefabSpawner: MonoBehaviour
             index = 0;
         }
 
-        Vector3 pos;
+        Vector2 pos;
         do
         {
-            pos = transform.position;
-            pos.x += Random.Range(-maxX, maxX);
-            pos.y += Random.Range(-maxY, maxY);
-            pos.z = 0;
+            pos = (Vector2)transform.position + Random.insideUnitCircle * Random.Range(minSpawnRadius, maxSpawnRadius);
             yield return null;
         } while (!IsValidSpawnLocation(pos, overrideSpawnCheck));
-        
-        Vector3 rot = new Vector3(0, 0, Random.Range(0, 360));
-        GameObject inst = GameObject.Instantiate(spawnables[index], pos, Quaternion.Euler(rot));
+
+        //Vector3 rot = new Vector3(0, 0, Random.Range(0, 360));
+        //GameObject inst = GameObject.Instantiate(spawnables[index], pos, Quaternion.Euler(rot));
+        GameObject inst = GameObject.Instantiate(spawnables[index], pos, Quaternion.identity);
 
         Debug.Log("spawned " + inst);
 
         spawnedObjects.Add(inst);
-        
+
         spawning = false;
     }
 

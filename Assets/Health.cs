@@ -7,6 +7,7 @@ public class Health : MonoBehaviour
     private LevelManager levelManager;
     public bool invincible = false;
     public float maxHealth = 100;
+    public float resurrectHealth = 50;
 	public float currentHealth;
 
     public float lowDamageThreshold;

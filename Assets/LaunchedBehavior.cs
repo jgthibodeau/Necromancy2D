@@ -8,19 +8,17 @@ public class LaunchedBehavior : MonoBehaviour {
     public bool launched;
     public Vector3 launchForce;
     private EntityController controller;
+    private AiController aiController;
     private Rigidbody2D rigidbody2D;
 
     public GameObject explosionPrefab;
 
-    void Start()
+    void Awake()
     {
         controller = GetComponent<EntityController>();
+        aiController = GetComponent<AiController>();
         rigidbody2D = GetComponent<Rigidbody2D>();
     }
-    // Update is called once per frame
-    void Update () {
-		
-	}
 
     public void DoBehavior()
     {
@@ -28,6 +26,7 @@ public class LaunchedBehavior : MonoBehaviour {
         {
             rigidbody2D.AddForce(launchForce);
 
+            aiController.targetTransform = null;
             controller.Stop();
             controller.active = false;
         }

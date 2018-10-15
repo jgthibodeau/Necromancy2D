@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public class AllyBehavior : MonoBehaviour
 {
@@ -10,7 +11,8 @@ public class AllyBehavior : MonoBehaviour
     public Transform player;
     public SummonSpot summonSpot;
     public Enemy enemy;
-    private EntityController controller;
+    private EntityController entityController;
+    private AiController aiController;
 
     public float minDistance;
     public float maxDistance;
@@ -22,79 +24,34 @@ public class AllyBehavior : MonoBehaviour
     public bool attacking;
     public float attackMoveSpeed;
 
-    public float attackRate;
-    private Vector2 moveDirection;
+    void Awake()
+    {
+        entityController = GetComponent<EntityController>();
+        aiController = GetComponent<AiController>();
+    }
 
     void Start()
     {
-        controller = GetComponent<EntityController>();
+        player = MyGameManager.instance.GetPlayer().transform;
     }
 
     public void DoBehavior()
     {
-        //move close to player
-        FollowPlayer();
+        aiController.targetTransform = summonSpot.transform;
+        aiController.minDistance = minDistance;
+        aiController.maxDistance = maxDistance;
+        aiController.desiredDistance = minDistance;
 
-        //rotate away from player
+        entityController.turnSpeed = turnSpeed;
+        entityController.RotateAwayFrom(player);
 
-        //if player clicked attack, attack
-    }
-
-    void FollowPlayer()
-    {
-        Vector2 target = summonSpot.transform.position;
-
-        Debug.DrawRay(transform.position, (target - (Vector2)transform.position), Color.red);
-        float distanceToTarget = Vector3.Distance(target, transform.position);
-
-        Vector2 direction = target - (Vector2)transform.position;
-        controller.active = true;
-
-        if (distanceToTarget > maxDistance)
+        if (attacking)
         {
-            followState = FOLLOW_STATE.FAR;
+            entityController.speed = attackMoveSpeed;
         }
-        else if (distanceToTarget > minDistance)
+        else
         {
-            followState = FOLLOW_STATE.MID;
+            entityController.speed = speed;
         }
-        else// if (distanceToTarget <= minDistance)
-        {
-            followState = FOLLOW_STATE.CLOSE;
-        }
-
-        switch (followState)
-        {
-            case FOLLOW_STATE.FAR:
-                controller.speed = speed;
-                if (attacking)
-                {
-                    controller.speed = attackMoveSpeed;
-                }
-                moveDirection = direction;
-                break;
-            case FOLLOW_STATE.MID:
-                controller.speed = speed;
-                if (attacking)
-                {
-                    controller.speed = attackMoveSpeed;
-                }
-                moveDirection = direction;
-                
-                float scale = Util.ConvertScale(minDistance, maxDistance, 0, 1, distanceToTarget);
-                //moveDirection *= scale;
-                controller.speed *= scale;
-                break;
-            case FOLLOW_STATE.CLOSE:
-                controller.Stop();
-                controller.active = false;
-                break;
-        }
-
-        moveDirection = enemy.Avoidance(moveDirection);
-
-        controller.turnSpeed = turnSpeed;
-        controller.SetMoveDirection(moveDirection);
-        controller.RotateAwayFrom(player);
     }
 }
