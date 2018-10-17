@@ -38,7 +38,12 @@ public abstract class Enemy : MonoBehaviour
 
     protected LayerMask currentTargetLayers;
 
-    public Animator animator;
+    public Animator defaultAnimator;
+    private Animator aliveAnimator;
+    private Animator deadAnimator;
+    private Animator resurrectedAnimator;
+    private Animator currentAnimator;
+
     public AudioSource audioSource;
     public AudioClip attackClip;
 
@@ -71,8 +76,16 @@ public abstract class Enemy : MonoBehaviour
         controller = GetComponent<EntityController>();
         health = GetComponent<Health>();
         audioSource = GetComponent<AudioSource>();
-        animator = GetComponent<Animator>();
-    }
+        if (defaultAnimator == null)
+        {
+            defaultAnimator = GetComponent<Animator>();
+        }
+        currentAnimator = defaultAnimator;
+
+        aliveAnimator = aliveGraphics.GetComponentInChildren<Animator>();
+        deadAnimator = deadGraphics.GetComponentInChildren<Animator>();
+        resurrectedAnimator = resurectedGraphics.GetComponentInChildren<Animator>();
+}
 
     public bool CanResurrect()
     {
@@ -84,10 +97,19 @@ public abstract class Enemy : MonoBehaviour
         return lifeState == LIFE_STATE.DEAD || lifeState == LIFE_STATE.LAUNCHED;
     }
 
+    public bool IsAlive()
+    {
+        return lifeState == LIFE_STATE.ALIVE;
+    }
+
     public virtual void FixedUpdate() {
         if (health.currentHealth <= 0)
         {
             lifeState = LIFE_STATE.DEAD;
+            currentAnimator.SetFloat("Speed", 0);
+        } else
+        {
+            currentAnimator.SetFloat("Speed", controller.rb.velocity.magnitude);
         }
 
         switch(lifeState)
@@ -100,6 +122,8 @@ public abstract class Enemy : MonoBehaviour
                 resurectedGraphics.SetActive(false);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(false);
+                
+                SetAnimator(aliveAnimator);
 
                 enemyBehavior.DoBehavior();
                 break;
@@ -112,6 +136,8 @@ public abstract class Enemy : MonoBehaviour
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(false);
 
+                SetAnimator(resurrectedAnimator);
+
                 allyBehavior.DoBehavior();
                 break;
             case LIFE_STATE.DEAD:
@@ -122,18 +148,30 @@ public abstract class Enemy : MonoBehaviour
                 deadGraphics.SetActive(true);
                 launchedGraphics.SetActive(false);
 
+                SetAnimator(deadAnimator);
+
                 controller.Stop();
                 break;
             case LIFE_STATE.LAUNCHED:
                 gameObject.layer = launchedLayer;
 
                 aliveGraphics.SetActive(false);
-                resurectedGraphics.SetActive(false);
+                resurectedGraphics.SetActive(true);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(true);
+                
+                SetAnimator(resurrectedAnimator);
 
                 launchedBehavior.DoBehavior();
                 break;
+        }
+    }
+
+    void SetAnimator(Animator a)
+    {
+        if (a != null && currentAnimator != a)
+        {
+            currentAnimator = a;
         }
     }
 
@@ -182,7 +220,7 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void Attack()
     {
-        animator.SetTrigger("Attack");
+        currentAnimator.SetTrigger("Attack");
         audioSource.Play();
     }
 

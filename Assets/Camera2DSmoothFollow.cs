@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class Camera2DSmoothFollow : MonoBehaviour {
     private Camera camera;
 
@@ -17,7 +16,7 @@ public class Camera2DSmoothFollow : MonoBehaviour {
     
     void Start()
     {
-        camera = GetComponent<Camera>();
+        camera = GetComponentInChildren<Camera>();
     }
 
     // Update is called once per frame

@@ -20,7 +20,7 @@ public class EntityController : MonoBehaviour
     public LayerMask avoidanceLayers;
 
 
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
 
     private Vector2 moveDirection = Vector2.zero;
     private Quaternion originalGraphicsBaseRot;

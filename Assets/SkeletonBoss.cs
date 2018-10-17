@@ -6,13 +6,23 @@ public class SkeletonBoss : Enemy
 {
     public PrefabSpawner spawner;
 
-    public override void StartAttack()
+    private bool attacking = false;
+
+    void Update()
     {
-        spawner.active = true;
+        if (attacking)
+        {
+            spawner.active = true;
+            attacking = false;
+        } else
+        {
+            spawner.active = false;
+        }
     }
 
-    public override void StopAttack()
+    public override void Attack()
     {
-        spawner.active = false;
+        base.Attack();
+        attacking = true;
     }
 }

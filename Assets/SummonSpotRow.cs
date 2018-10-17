@@ -8,9 +8,9 @@ public class SummonSpotRow : MonoBehaviour
     public SummonSpotRow nextRow;
     public SummonSpotRow prevRow;
 
-    int summonSpotCount;
-    int emptySummonSpotCount;
-    int filledSummonSpotCount;
+    private int summonSpotCount;
+    private int emptySummonSpotCount;
+    private int filledSummonSpotCount;
 
     int nextFreeSummonSpot;
 
@@ -46,7 +46,16 @@ public class SummonSpotRow : MonoBehaviour
 
     public int EnemyCount()
     {
+        if (filledSummonSpotCount == 0)
+        {
+            RefreshSummonSpotCount();
+        }
         return filledSummonSpotCount;
+    }
+
+    public int GetEmptySummonSpotCount()
+    {
+        return emptySummonSpotCount;
     }
 
     public void RefreshSummonSpotCount()
@@ -64,7 +73,7 @@ public class SummonSpotRow : MonoBehaviour
 
     private void Reorganize()
     {
-        if (prevRow != null && filledSummonSpotCount > 0 && prevRow.emptySummonSpotCount >= filledSummonSpotCount)
+        if (prevRow != null && EnemyCount() > 0 && prevRow.GetEmptySummonSpotCount() >= EnemyCount())
         {
             foreach (SummonSpot spot in summonSpots)
             {
@@ -86,7 +95,7 @@ public class SummonSpotRow : MonoBehaviour
 
     public SummonSpot GetFreeSummonSpot()
     {
-        if (emptySummonSpotCount == 0) { return null; }
+        if (GetEmptySummonSpotCount() == 0) { return null; }
 
         foreach (SummonSpot spot in summonSpots)
         {

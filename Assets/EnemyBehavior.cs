@@ -37,7 +37,7 @@ public class EnemyBehavior : MonoBehaviour
     private float currentWanderChangeTime;
 
 
-    private float distanceToTarget;
+    private float distanceToTarget = Mathf.Infinity;
 
     void Awake()
     {
@@ -49,6 +49,7 @@ public class EnemyBehavior : MonoBehaviour
     {
         player = MyGameManager.instance.GetPlayer().transform;
         playerHealth = player.GetComponentInChildren<Health>();
+        distanceToTarget = Mathf.Infinity;
     }
 
     public void DoBehavior()

@@ -10,7 +10,7 @@ public class AiController : MonoBehaviour
 
     public Transform targetTransform;
 
-    public float distanceToTarget;
+    public float distanceToTarget = Mathf.Infinity;
 
     public float minDistance;
     public float maxDistance;
@@ -34,6 +34,7 @@ public class AiController : MonoBehaviour
 
     void Start()
     {
+        distanceToTarget = Mathf.Infinity;
         aStarTarget = transform.position;
         UpdatePath();
         StartCoroutine(UpdatePathPoint());

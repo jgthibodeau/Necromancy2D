@@ -18,6 +18,9 @@ public class PrefabSpawner: MonoBehaviour
 
     public int initialSpawnCount;
 
+    [Range(1, 100)]
+    public int spawnCountWhenZero;
+
     public int maxToSpawn;
     public float coolDown;
     public float currentCoolDown;
@@ -58,13 +61,26 @@ public class PrefabSpawner: MonoBehaviour
             currentCoolDown -= Time.deltaTime;
         } else if (CanSpawn())
         {
-            Spawn(false);
+            int spawnTimes = 1;
+            if (spawnedObjects.Count == 0)
+            {
+                spawnTimes = spawnCountWhenZero;
+            }
+            for (; spawnTimes > 0; spawnTimes--)
+            {
+                Spawn(false);
+            }
         }
     }
 
     void CleanNullSpawns()
     {
-        spawnedObjects.RemoveAll(item => item == null);
+        spawnedObjects.RemoveAll(item => item == null || IsUnLiveEnemy(item));
+    }
+
+    bool IsUnLiveEnemy(GameObject go)
+    {
+        return go.GetComponent<Enemy>() != null && !go.GetComponent<Enemy>().IsAlive();
     }
 
     public bool CanSpawn()
