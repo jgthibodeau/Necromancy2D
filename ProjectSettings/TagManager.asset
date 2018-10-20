@@ -17,6 +17,7 @@ TagManager:
   - Gold
   - Breadcrumb
   - Bullet
+  - Highlightable
   layers:
   - Default
   - TransparentFX
@@ -40,8 +41,8 @@ TagManager:
   - Dead
   - Launched
   - Ground
-  - 
-  - 
+  - FriendlyProjectile
+  - EnemyProjectile
   - 
   - 
   - 

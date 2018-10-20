@@ -6,6 +6,7 @@ using TMPro;
 
 [RequireComponent(typeof(FadeAudio))]
 public class SummonCircle : MonoBehaviour {
+    private OutlineController outlineController;
     private Player player;
     public Image skeletonSummonImage;
     public TextMeshProUGUI text;
@@ -38,8 +39,10 @@ public class SummonCircle : MonoBehaviour {
     public GameObject corpseExplosionPrefab;
     
     // Use this for initialization
-    void Start () {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    void Start ()
+    {
+        player = MyGameManager.instance.GetPlayer();
+        outlineController = MyGameManager.instance.GetOutlineController();
         fadeAudio = GetComponent<FadeAudio>();
 
         //if (generateSummonSpots)
@@ -491,6 +494,9 @@ public class SummonCircle : MonoBehaviour {
         
         CleanNullSummons();
 
+        //List<GameObject> summonGameObjects = summons.ConvertAll(new System.Converter<Enemy, GameObject>(EnemyToObject));
+        //outlineController.SetObjects(OutlineController.HIGHLIGHT_TYPE.RESSURECTED, summonGameObjects);
+
         if (summonEnabled && summons.Count <= minSummons)
         {
             if (!summoningSkeletons)
@@ -511,6 +517,11 @@ public class SummonCircle : MonoBehaviour {
         {
             skeletonSummonImage.fillAmount = 0;
         }
+    }
+
+    public static GameObject EnemyToObject(Enemy e)
+    {
+        return e.gameObject;
     }
 
     public bool HasSummons()
@@ -597,6 +608,8 @@ public class SummonCircle : MonoBehaviour {
             summonSpot.enemy = enemy;
             enemy.Resurrect(summonSpot);
             enemy.summonCircle = this;
+            
+            //outlineController.AddObject(OutlineController.HIGHLIGHT_TYPE.RESSURECTED, enemy.gameObject);
         }
     }
 

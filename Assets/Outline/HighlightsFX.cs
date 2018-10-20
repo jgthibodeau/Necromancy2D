@@ -56,9 +56,9 @@ public class HighlightsFX : MonoBehaviour
     [Header("Outline Settings")]
 
     public HighlightType m_selectionType = HighlightType.Glow;
-	public FillType m_fillType = FillType.Outline;
+    public FillType m_fillType = FillType.Outline;
 	public RTResolution m_resolution = RTResolution.Full;
-    [Range(0f, 1f)]
+    [Range(-10f, 10f)]
     public float m_controlValue = 0.5f;
     public CameraEvent BufferDrawEvent = CameraEvent.BeforeImageEffects;
 

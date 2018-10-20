@@ -6,8 +6,9 @@ public class MyGameManager : MonoBehaviour
 {
     public static MyGameManager instance = null;
     private Player player;
+    private OutlineController outlineController;
 
-	public int maxInstances = 50;
+    public int maxInstances = 50;
     public enum InstanceableType { BULLET, MISSLE, DEBRIS, PICKUP, EXPLOSION }
     public Dictionary<InstanceableType, List<GameObject>> instanceMap;
 
@@ -58,7 +59,7 @@ public class MyGameManager : MonoBehaviour
             }
             GameObject.Destroy(instanceObj);
         }
-	}
+    }
 
     public Player GetPlayer()
     {
@@ -67,6 +68,15 @@ public class MyGameManager : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         }
         return player;
+    }
+
+    public OutlineController GetOutlineController()
+    {
+        if (outlineController == null)
+        {
+            outlineController = Camera.main.GetComponent<OutlineController>();
+        }
+        return outlineController;
     }
 
     public bool CanPause()

@@ -28,6 +28,7 @@ public class AllyBehavior : MonoBehaviour
     {
         entityController = GetComponent<EntityController>();
         aiController = GetComponent<AiController>();
+        enemy = GetComponent<Enemy>();
     }
 
     void Start()

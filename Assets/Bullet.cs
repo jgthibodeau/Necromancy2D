@@ -8,31 +8,18 @@ public class Bullet : MonoBehaviour {
     private Rigidbody2D rb;
     public float bulletForce;
     public float bulletDamage;
-    public LayerMask enemyLayer;
     public LayerMask bulletLayer;
-    public LayerMask capturedLayer;
-    public float ignoreEnemyLayerTime;
-    public float currentIgnoreEnemyLayerTime;
 
     public bool rotateToVelocity;
 
-    public float minCollisionSpeedToDamage;
+    public Vector2 velocity;
 
     void Start()
     {
-        currentIgnoreEnemyLayerTime = ignoreEnemyLayerTime;
         rb = GetComponent<Rigidbody2D>();
-        Vector2 newVelocity = transform.up * bulletForce;
-        newVelocity += rb.velocity;
-        rb.velocity = newVelocity;
-    }
-
-    void Update()
-    {
-        if (currentIgnoreEnemyLayerTime > 0)
-        {
-            currentIgnoreEnemyLayerTime -= Time.deltaTime;
-        }
+        velocity = transform.forward * bulletForce;
+        //velocity += rb.velocity;
+        rb.velocity = velocity;
     }
 
 	// Update is called once per frame
@@ -40,6 +27,7 @@ public class Bullet : MonoBehaviour {
     {
         //rb.velocity = transform.up * bulletForce;
 
+        rb.velocity = velocity;
         if (rotateToVelocity)
         {
             rb.rotation = Vector2.SignedAngle(Vector2.up, rb.velocity);
@@ -48,14 +36,6 @@ public class Bullet : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (Util.InLayerMask(other.gameObject.layer, bulletLayer) ||
-            (Util.InLayerMask(other.gameObject.layer, capturedLayer) && Util.InLayerMask(other.gameObject.layer, capturedLayer)) ||
-            (currentIgnoreEnemyLayerTime > 0 && Util.InLayerMask(other.gameObject.layer, enemyLayer)) ||
-            other.relativeVelocity.magnitude < minCollisionSpeedToDamage)
-        {
-            return;
-        }
-
         //Debug.Log("collided with " + other.gameObject.name);
 
         GameObject hit = other.gameObject;

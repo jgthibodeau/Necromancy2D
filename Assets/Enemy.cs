@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using cakeslice;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(EntityController))]
@@ -12,7 +13,6 @@ public abstract class Enemy : MonoBehaviour
     public LIFE_STATE lifeState;
     
     public GameObject aliveGraphics;
-    public GameObject resurectedGraphics;
     public GameObject deadGraphics;
     public GameObject launchedGraphics;
 
@@ -24,6 +24,8 @@ public abstract class Enemy : MonoBehaviour
     public LaunchedBehavior launchedBehavior;
     private EntityController controller;
     private Health health;
+    private Outline outline;
+    public Rigidbody2D rigidBody;
 
     public int enemyLayer;
     public int allyLayer;
@@ -41,8 +43,7 @@ public abstract class Enemy : MonoBehaviour
     public Animator defaultAnimator;
     private Animator aliveAnimator;
     private Animator deadAnimator;
-    private Animator resurrectedAnimator;
-    private Animator currentAnimator;
+    public Animator currentAnimator;
 
     public AudioSource audioSource;
     public AudioClip attackClip;
@@ -59,7 +60,7 @@ public abstract class Enemy : MonoBehaviour
         launchedLayer = LayerMask.NameToLayer("Launched");
     }
 
-    void Start()
+    public virtual void Start()
     {
         player = MyGameManager.instance.GetPlayer().transform;
 
@@ -75,6 +76,9 @@ public abstract class Enemy : MonoBehaviour
         launchedBehavior = GetComponent<LaunchedBehavior>();
         controller = GetComponent<EntityController>();
         health = GetComponent<Health>();
+        outline = aliveGraphics.GetComponentInChildren<Outline>();
+        rigidBody = GetComponent<Rigidbody2D>();
+
         audioSource = GetComponent<AudioSource>();
         if (defaultAnimator == null)
         {
@@ -84,7 +88,6 @@ public abstract class Enemy : MonoBehaviour
 
         aliveAnimator = aliveGraphics.GetComponentInChildren<Animator>();
         deadAnimator = deadGraphics.GetComponentInChildren<Animator>();
-        resurrectedAnimator = resurectedGraphics.GetComponentInChildren<Animator>();
 }
 
     public bool CanResurrect()
@@ -118,8 +121,8 @@ public abstract class Enemy : MonoBehaviour
                 gameObject.layer = enemyLayer;
                 currentTargetLayers = aliveTargetLayers;
 
+                SetOutlineColor(0);
                 aliveGraphics.SetActive(true);
-                resurectedGraphics.SetActive(false);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(false);
                 
@@ -131,20 +134,20 @@ public abstract class Enemy : MonoBehaviour
                 gameObject.layer = allyLayer;
                 currentTargetLayers = allyTargetLayers;
 
-                aliveGraphics.SetActive(false);
-                resurectedGraphics.SetActive(true);
+                SetOutlineColor(1);
+                aliveGraphics.SetActive(true);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(false);
 
-                SetAnimator(resurrectedAnimator);
+                SetAnimator(aliveAnimator);
 
                 allyBehavior.DoBehavior();
                 break;
             case LIFE_STATE.DEAD:
                 gameObject.layer = deadLayer;
 
+                SetOutlineColor(0);
                 aliveGraphics.SetActive(false);
-                resurectedGraphics.SetActive(false);
                 deadGraphics.SetActive(true);
                 launchedGraphics.SetActive(false);
 
@@ -154,16 +157,27 @@ public abstract class Enemy : MonoBehaviour
                 break;
             case LIFE_STATE.LAUNCHED:
                 gameObject.layer = launchedLayer;
-
-                aliveGraphics.SetActive(false);
-                resurectedGraphics.SetActive(true);
+                
+                SetOutlineColor(1);
+                aliveGraphics.SetActive(true);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(true);
                 
-                SetAnimator(resurrectedAnimator);
+                SetAnimator(aliveAnimator);
 
                 launchedBehavior.DoBehavior();
                 break;
+        }
+    }
+
+    void SetOutlineColor(int c)
+    {
+        if (outline != null)
+        {
+            outline.SetColor(c);
+        } else
+        {
+            outline = aliveGraphics.GetComponentInChildren<Outline>();
         }
     }
 

@@ -10,17 +10,55 @@ public class RangedEnemy : Enemy
     public float updatePlayerVelocityRate;
 
     private EntityController controller;
-    public GameObject bullet;
+    public GameObject friendlyProjectile;
+    public GameObject enemyProjectile;
     public Transform firePosition;
     public float fireRandomness;
 
-    private Rigidbody2D rigidBody;
+    public int friendlyFireballLayer;
+    public int enemyFireballLayer;
 
-    public override void Attack()
+    public override void Start()
+    {
+        base.Start();
+
+        friendlyFireballLayer = LayerMask.NameToLayer("FriendlyProjectile");
+        enemyFireballLayer = LayerMask.NameToLayer("EnemyProjectile");
+    }
+
+    public override void StartAttack()
+    {
+        Vector2 aimPoint;
+        GameObject bullet;
+        if (lifeState == LIFE_STATE.ALIVE)
+        {
+            bullet = enemyProjectile;
+            aimPoint = CalculateAimPoint(bullet);
+        }
+        else
+        {
+            bullet = friendlyProjectile;
+            aimPoint = firePosition.position + transform.up;
+        }
+        
+        FireAt(aimPoint, bullet);
+    }
+
+    public override void StopAttack()
     {
     }
 
-    Vector2 CalculateAimPoint()
+    void FireAt(Vector2 point, GameObject bullet)
+    {
+        Vector2 position = (Vector2)firePosition.position + Random.insideUnitCircle * fireRandomness;
+        Quaternion rotation = Quaternion.LookRotation((point - position), Vector3.forward);
+        GameObject bulletInst = GameObject.Instantiate(bullet, position, rotation);
+        //Bullet b = bulletInst.GetComponent<Bullet>();
+        //bulletInst.layer = layer;
+    }
+
+
+    Vector2 CalculateAimPoint(GameObject bullet)
     {
         Vector2 totarget = player.transform.position - transform.position;
 

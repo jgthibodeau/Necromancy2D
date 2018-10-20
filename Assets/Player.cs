@@ -6,12 +6,14 @@ using UnityStandardAssets.Characters.ThirdPerson;
 
 [RequireComponent(typeof(EntityController))]
 [RequireComponent(typeof(Health))]
+[RequireComponent(typeof(Stamina))]
 public class Player : MonoBehaviour
 {
     private LevelManager levelManager;
     private EntityController controller;
     private EnemyLauncher enemyLauncher;
     private Health health;
+    private Stamina stamina;
     [Range(0f, 1f)]
     public float criticalHealthPercent = 0.25f;
 
@@ -34,6 +36,7 @@ public class Player : MonoBehaviour
         controller = GetComponent<EntityController>();
         enemyLauncher = GetComponent<EnemyLauncher>();
         health = GetComponent<Health>();
+        stamina = GetComponent<Stamina>();
         screenShake = ScreenShake.instance;
     }
 
@@ -77,6 +80,7 @@ public class Player : MonoBehaviour
     }
 
     private bool dashing;
+    private bool secondDash;
     public float dashTime;
     public float dashRechargeTime;
     public float dashSpeed;
@@ -90,39 +94,75 @@ public class Player : MonoBehaviour
     {
         if (!dashing)
         {
-            if (remainingDashRechargeTime > 0)
+            if (stamina.HasStamina() && (Util.GetButtonDown("Dash") || secondDash))
             {
-                dashBar.SetActive(true);
-                dashBarFill.fillAmount = 1f - remainingDashRechargeTime / dashRechargeTime;
-                dashEffect.Stop();
-                remainingDashRechargeTime -= Time.deltaTime;
-            } else  if (Util.GetButtonDown("Dash"))
-            {
-                dashBar.SetActive(false);
+                stamina.UseStamina();
                 dashEffect.Play();
                 dashing = true;
+                secondDash = false;
                 remainingDashTime = dashTime;
                 controller.speed = dashSpeed;
                 controller.NormalizeMoveDirection();
-            } else
-            {
-                dashBar.SetActive(false);
             }
-        } else
+            else
+            {
+                dashEffect.Stop();
+            }
+        }
+        else
         {
-            dashBar.SetActive(true);
-            dashBarFill.fillAmount = 0f;
+            //TODO if pressed dash again, queue up a second dash
+            if (Util.GetButtonDown("Dash"))
+            {
+                secondDash = true;
+            }
 
             if (remainingDashTime > 0)
             {
                 remainingDashTime -= Time.deltaTime;
-            } else
+            }
+            else
             {
                 dashing = false;
-                remainingDashRechargeTime = dashRechargeTime;
                 controller.speed = normalSpeed;
             }
         }
+
+        //if (!dashing)
+        //{
+        //    if (remainingDashRechargeTime > 0)
+        //    {
+        //        dashBar.SetActive(true);
+        //        dashBarFill.fillAmount = 1f - remainingDashRechargeTime / dashRechargeTime;
+        //        dashEffect.Stop();
+        //        remainingDashRechargeTime -= Time.deltaTime;
+        //    } else  if (Util.GetButtonDown("Dash"))
+        //    {
+        //        dashBar.SetActive(false);
+        //        dashEffect.Play();
+        //        dashing = true;
+        //        remainingDashTime = dashTime;
+        //        controller.speed = dashSpeed;
+        //        controller.NormalizeMoveDirection();
+        //    } else
+        //    {
+        //        dashBar.SetActive(false);
+        //    }
+        //} else
+        //{
+        //    dashBar.SetActive(true);
+        //    dashBarFill.fillAmount = 0f;
+
+        //    if (remainingDashTime > 0)
+        //    {
+        //        remainingDashTime -= Time.deltaTime;
+        //    } else
+        //    {
+        //        dashing = false;
+        //        remainingDashRechargeTime = dashRechargeTime;
+        //        controller.speed = normalSpeed;
+        //    }
+        //}
     }
 
     private bool attacking;

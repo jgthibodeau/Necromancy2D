@@ -43,6 +43,7 @@ public class EnemyBehavior : MonoBehaviour
     {
         controller = GetComponent<EntityController>();
         aiController = GetComponent<AiController>();
+        enemy = GetComponent<Enemy>();
     }
 
     void Start()
