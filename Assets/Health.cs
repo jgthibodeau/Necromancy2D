@@ -27,13 +27,40 @@ public class Health : MonoBehaviour
     public Vector3 maxSpawnForce = new Vector3(1, 2, 1);
 
     public bool destroyOnDeath = true;
+    public bool alwaysResurrectable = false;
 
     private bool alreadyDead = false;
+
+    public float flashTime;
+    private float currentFlashTime;
+    public bool invicibleWhileFlashing = false;
+    public float flashAlternateRate = 0.5f;
+    private bool isFlashing;
+
+    public Renderer mainRenderer;
+    public Material flashMaterial;
 
     void Start() {
         //		Reset ();
         //		respawnable = GetComponent<Respawnable> ();
         levelManager = LevelManager.instance;
+    }
+
+    void Update()
+    {
+        if (currentFlashTime > 0)
+        {
+            currentFlashTime -= Time.deltaTime;
+        }
+    }
+
+    public void Resurrect()
+    {
+        alreadyDead = false;
+        currentHealth = resurrectHealth;
+        maxHealth = resurrectHealth;
+        
+        destroyOnDeath = !alwaysResurrectable;
     }
 
 	public void Hit(float damage, GameObject hitter) {
@@ -45,7 +72,7 @@ public class Health : MonoBehaviour
 	}
     
 	public void TakeDamage(float damage) {
-        if (IsDead())
+        if (IsDead() || IsInvincible())
         {
             return;
         }
@@ -67,13 +94,52 @@ public class Health : MonoBehaviour
 		currentHealth -= damage;
         
 		if (IsDead ()) {
-			Kill ();
-		}
+            currentFlashTime = 0;
+            Kill ();
+		} else
+        {
+            currentFlashTime = flashTime;
+            if (!isFlashing)
+            {
+                isFlashing = true;
+                StartCoroutine(Flash());
+            }
+        }
 	}
 
-	public bool IsDead() {
+    IEnumerator Flash()
+    {
+        bool useNewMaterial = true;
+        Material oldMaterial = mainRenderer.material;
+
+        while (currentFlashTime > 0)
+        {
+            //alternate materials
+            if (useNewMaterial)
+            {
+                mainRenderer.material = flashMaterial;
+            } else
+            {
+                mainRenderer.material = oldMaterial;
+            }
+            useNewMaterial = !useNewMaterial;
+            yield return new WaitForSeconds(flashAlternateRate);
+        }
+
+        //reset material
+        mainRenderer.material = oldMaterial;
+        isFlashing = false;
+    }
+
+
+    public bool IsDead() {
 		return alreadyDead || currentHealth <= 0;
 	}
+
+    public bool IsInvincible()
+    {
+        return invicibleWhileFlashing && currentFlashTime > 0;
+    }
 
 	public void Kill() {
         alreadyDead = true;

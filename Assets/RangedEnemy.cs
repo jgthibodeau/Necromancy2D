@@ -8,8 +8,7 @@ public class RangedEnemy : Enemy
 
     public bool leadPlayer;
     public float updatePlayerVelocityRate;
-
-    private EntityController controller;
+    
     public GameObject friendlyProjectile;
     public GameObject enemyProjectile;
     public Transform firePosition;
@@ -17,6 +16,8 @@ public class RangedEnemy : Enemy
 
     public int friendlyFireballLayer;
     public int enemyFireballLayer;
+
+    public bool aimAtMouse = true;
 
     public override void Start()
     {
@@ -30,7 +31,8 @@ public class RangedEnemy : Enemy
     {
         Vector2 aimPoint;
         GameObject bullet;
-        if (lifeState == LIFE_STATE.ALIVE)
+        //if (lifeState == LIFE_STATE.ALIVE)
+        if (fsm.CurrentStateID == StateID.Chase)
         {
             bullet = enemyProjectile;
             aimPoint = CalculateAimPoint(bullet);
@@ -38,7 +40,14 @@ public class RangedEnemy : Enemy
         else
         {
             bullet = friendlyProjectile;
-            aimPoint = firePosition.position + transform.up;
+            if (aimAtMouse)
+            {
+                aimPoint = summonCircle.transform.position;
+            }
+            else
+            {
+                aimPoint = firePosition.position + transform.up;
+            }
         }
         
         FireAt(aimPoint, bullet);

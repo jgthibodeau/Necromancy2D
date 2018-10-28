@@ -29,17 +29,20 @@ public class EnemyLauncher : MonoBehaviour {
         mouse = Util.MouseInWorld();
         DebugExtension.DebugWireSphere(mouse, Color.yellow, mouseRadius);
 
-        if (HasEnemy())
+        if (!MyGameManager.instance.isPaused)
         {
-            Time.timeScale = launchTimeScale;
-            distance = Vector2.Distance(enemyToLaunch.transform.position, mouse);
+            if (HasEnemy())
+            {
+                Time.timeScale = launchTimeScale;
+                distance = Vector2.Distance(enemyToLaunch.transform.position, mouse);
+            }
+            else
+            {
+                Time.timeScale = 1f;
+                distance = 0;
+            }
+            Time.fixedDeltaTime = 0.02F * Time.timeScale;
         }
-        else
-        {
-            Time.timeScale = 1f;
-            distance = 0;
-        }
-        Time.fixedDeltaTime = 0.02F * Time.timeScale;
 
         UpdateGraphics();
     }
@@ -68,6 +71,11 @@ public class EnemyLauncher : MonoBehaviour {
         //{
         //    enemyToLaunch = collider.GetComponent<Enemy>();
         //}
+    }
+
+    public void Clear()
+    {
+        enemyToLaunch = null;
     }
 
     public bool HasEnemy()

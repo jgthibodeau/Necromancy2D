@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 
 [RequireComponent(typeof(FadeAudio))]
+[RequireComponent(typeof(AudioSource))]
 public class SummonCircle : MonoBehaviour {
     private OutlineController outlineController;
     private Player player;
@@ -12,8 +13,7 @@ public class SummonCircle : MonoBehaviour {
     public TextMeshProUGUI text;
 
     public FadeAudio fadeAudio;
-
-    public int minSummons;
+    
     public int maxSummons;
     public List<Enemy> summons = new List<Enemy>();
 
@@ -30,11 +30,14 @@ public class SummonCircle : MonoBehaviour {
 
     public float timeToSummonSkeletons;
     public int numberSkeletonsToSummon;
+    public int numberSkeletonsToSummonAtOnce = 1;
     private float currentTimeToSummonSkeletons;
     private bool summoningSkeletons;
     public float minSkeletonRadius, maxSkeletonRadius;
     public GameObject skeletonPrefab;
-    public AudioSource summonSkeletonsAudioSource;
+
+    public AudioClip summonClip, skeletonClip;
+    private AudioSource audioSource;
 
     public GameObject corpseExplosionPrefab;
     
@@ -44,75 +47,50 @@ public class SummonCircle : MonoBehaviour {
         player = MyGameManager.instance.GetPlayer();
         outlineController = MyGameManager.instance.GetOutlineController();
         fadeAudio = GetComponent<FadeAudio>();
+        audioSource = GetComponent<AudioSource>();
 
         //if (generateSummonSpots)
         //{
         //    GenerateSummonSpots();
         //} else
         //{
-            ReadSummonSpots();
+        ReadSummonSpots();
         //}
     }
 
-    public Transform[] summonSpotBases;
-    public Transform[] summonSpotAttackBases;
-    public List<SummonSpotRow[]> summonSpotGroups;
-    public List<SummonSpotRow[]> summonSpotAttackGroups;
-    private SummonSpotRow[] currentSummonSpotGroup;
+    //public Transform[] summonSpotBases;
+    //public Transform[] summonSpotAttackBases;
+    public List<SummonSpotGroup> summonSpotGroups;
+    public List<SummonSpotGroup> summonSpotAttackGroups;
+    private SummonSpotGroup currentSummonSpotGroup;
     public int currrentSummonSpotGroupIndex = 0;
     public List<int> maxSummonsPerGroup;
     void ReadSummonSpots()
     {
-        summonSpotGroups = new List<SummonSpotRow[]>(summonSpotBases.Length);
-        summonSpotAttackGroups = new List<SummonSpotRow[]>(summonSpotAttackBases.Length);
-        maxSummonsPerGroup = new List<int>(summonSpotBases.Length + summonSpotAttackBases.Length);
+        maxSummonsPerGroup = new List<int>(summonSpotGroups.Count + summonSpotAttackGroups.Count);
 
-        foreach (Transform summonSpotBase in summonSpotBases)
+        foreach (SummonSpotGroup summonSpotGroup in summonSpotGroups)
         {
-            SummonSpotRow[] summonSpotRows = summonSpotBase.GetComponentsInChildren<SummonSpotRow>();
-            int maxSummons = 0;
-            foreach (SummonSpotRow row in summonSpotRows)
-            {
-                row.Initialize();
-                maxSummons += row.summonSpots.Length;
-            }
-            summonSpotGroups.Add(summonSpotRows);
-            maxSummonsPerGroup.Add(maxSummons);
+            summonSpotGroup.Initialize();
+            maxSummonsPerGroup.Add(summonSpotGroup.SummonSpotCount());
         }
-        foreach (Transform summonSpotBase in summonSpotAttackBases)
+        foreach (SummonSpotGroup summonSpotGroup in summonSpotAttackGroups)
         {
-            SummonSpotRow[] summonSpotRows = summonSpotBase.GetComponentsInChildren<SummonSpotRow>();
-            int maxSummons = 0;
-            foreach (SummonSpotRow row in summonSpotRows)
-            {
-                row.Initialize();
-                maxSummons += row.summonSpots.Length;
-            }
-            summonSpotAttackGroups.Add(summonSpotRows);
-            maxSummonsPerGroup.Add(maxSummons);
+            summonSpotGroup.Initialize();
+            maxSummonsPerGroup.Add(summonSpotGroup.SummonSpotCount());
         }
-
 
         int prevMax = maxSummonsPerGroup[0];
         for (int i=0; i< maxSummonsPerGroup.Count; i++) {
             int max = maxSummonsPerGroup[i];
             if (prevMax != max)
             {
-                Debug.LogError("Summon spot group has different count of spots than the previous one: " + prevMax + " " + max);
-                Debug.LogError(summonSpotBases[i]);
+                Debug.LogError("Summon spots groups have different count of spots" + prevMax + " " + max);
                 Application.Quit();
             }
         }
 
         currentSummonSpotGroup = summonSpotGroups[0];
-
-
-        //summonSpotRows = summonSpotBase.GetComponentsInChildren<SummonSpotRow>();
-        //maxSummons = 0;
-        //foreach(SummonSpotRow row in summonSpotRows)
-        //{
-        //    maxSummons += row.summonSpots.Length;
-        //}
     }
 
     public void SetSummonSpotGroup(int i, bool attack)
@@ -126,7 +104,7 @@ public class SummonCircle : MonoBehaviour {
         }
         //Debug.Log("Settings summon spot group to " + i + " " + attack);
 
-        SummonSpotRow[] newGroup;
+        SummonSpotGroup newGroup;
         if (attack)
         {
             newGroup = summonSpotAttackGroups[i];
@@ -137,33 +115,7 @@ public class SummonCircle : MonoBehaviour {
 
         if (newGroup != currentSummonSpotGroup)
         {
-            //Debug.Log(newGroup);
-            //return;
-            currrentSummonSpotGroupIndex = i;
-
-            int newRowIndex = 0;
-            int newSpotIndex = 0;
-            SummonSpotRow newRow = newGroup[newRowIndex];
-
-            foreach (SummonSpotRow oldRow in currentSummonSpotGroup)
-            {
-                foreach (SummonSpot oldSpot in oldRow.summonSpots)
-                {
-                    if (oldSpot.HasEnemy())
-                    {
-                        oldSpot.enemy.allyBehavior.attacking = attack;
-                        if (newSpotIndex >= newRow.summonSpots.Length)
-                        {
-                            newRowIndex++;
-                            newRow = newGroup[newRowIndex];
-                            newSpotIndex = 0;
-                        }
-                        newRow.summonSpots[newSpotIndex].SetEnemy(oldSpot.enemy);
-                        newSpotIndex++;
-                    }
-                }
-            }
-
+            currentSummonSpotGroup.MoveTo(newGroup, attack);
             currentSummonSpotGroup = newGroup;
         }
     }
@@ -269,15 +221,7 @@ public class SummonCircle : MonoBehaviour {
     
     SummonSpot GetFreeSummonSpot()
     {
-        foreach (SummonSpotRow row in currentSummonSpotGroup)
-        {
-            SummonSpot spot = row.GetFreeSummonSpot();
-            if (spot != null)
-            {
-                return spot;
-            }
-        }
-        return null;
+        return currentSummonSpotGroup.GetFreeSummonSpot();
     }
 
     public float mouseWithinSummonsRadius = 1f;
@@ -439,12 +383,7 @@ public class SummonCircle : MonoBehaviour {
 
     int SummonCount()
     {
-        int count = 0;
-        foreach(SummonSpotRow row in currentSummonSpotGroup)
-        {
-            count += row.EnemyCount();
-        }
-        return count;
+        return currentSummonSpotGroup.FilledSpotCount();
     }
 
     // Update is called once per frame
@@ -456,6 +395,7 @@ public class SummonCircle : MonoBehaviour {
         //GenerateSummonSpots();
         MoveSummonCircle();
 
+        player.GetAnimator().SetBool("Summon", false);
         //if (Util.GetButtonDown("SummonGroup1"))
         //{
         //    SetSummonSpotGroup(0);
@@ -481,6 +421,44 @@ public class SummonCircle : MonoBehaviour {
             summonEnabled = Util.GetButton("Summon");
             corpseExplosionTriggered = Util.GetButtonDown("CorpseExplosion");
             corpseExplosion = Util.GetButton("CorpseExplosion");
+
+            if (summonEnabled)
+            {
+                foreach(Enemy enemy in overlayedEnemies)
+                {
+                    if (CanSummon(enemy))
+                    {
+                        Debug.Log("Summoning " + enemy);
+                        Summon(enemy);
+                        overlayedEnemies.Remove(enemy);
+                        break;
+                    }
+                }
+            }
+            if (corpseExplosionTriggered)
+            {
+                Enemy closestEnemy = null;
+                float distance = Mathf.Infinity;
+                foreach (Enemy enemy in overlayedEnemies)
+                {
+                    if (CanExplode(enemy))
+                    {
+                        float currentDistance = Vector2.Distance(transform.position, enemy.transform.position);
+                        if (currentDistance < distance)
+                        {
+                            distance = currentDistance;
+                            closestEnemy = enemy;
+                        }
+                    }
+                }
+                if (closestEnemy != null)
+                {
+                    player.GetAnimator().SetTrigger("Explode");
+                    Debug.Log("Exploding " + closestEnemy);
+                    closestEnemy.Explode();
+                    overlayedEnemies.Remove(closestEnemy);
+                }
+            }
         }
         else
         {
@@ -497,7 +475,7 @@ public class SummonCircle : MonoBehaviour {
         //List<GameObject> summonGameObjects = summons.ConvertAll(new System.Converter<Enemy, GameObject>(EnemyToObject));
         //outlineController.SetObjects(OutlineController.HIGHLIGHT_TYPE.RESSURECTED, summonGameObjects);
 
-        if (summonEnabled && summons.Count <= minSummons)
+        if (summonEnabled && summons.Count < numberSkeletonsToSummon)
         {
             if (!summoningSkeletons)
             {
@@ -536,14 +514,15 @@ public class SummonCircle : MonoBehaviour {
             currentTimeToSummonSkeletons -= Time.deltaTime;
         } else
         {
-            summonSkeletonsAudioSource.Play();
-            for (int i=0; i< numberSkeletonsToSummon; i++)
+            currentTimeToSummonSkeletons = timeToSummonSkeletons;
+            for (int i=0; i< numberSkeletonsToSummonAtOnce && summons.Count < numberSkeletonsToSummon; i++)
             {
                 Vector2 position = (Vector2)transform.position + Random.insideUnitCircle * Random.Range(minSkeletonRadius, maxSkeletonRadius);
                 //Vector3 position = summonSpots[i].transform.position;
                 //Vector3 rotation = new Vector3(0, 0, Random.Range(0, 360));
                 GameObject skeletonInstance = GameObject.Instantiate(skeletonPrefab, position, Quaternion.identity);
                 Summon(skeletonInstance.GetComponent<Enemy>());
+                audioSource.PlayOneShot(skeletonClip);
             }
         }
     }
@@ -574,22 +553,40 @@ public class SummonCircle : MonoBehaviour {
             captureEffectDisabled.SetActive(true);
         }
     }
-    
-    void OnTriggerStay2D(Collider2D other)
+
+    List<Enemy> overlayedEnemies = new List<Enemy>();
+    void OnTriggerEnter2D(Collider2D other)
     {
         Enemy enemy = other.gameObject.GetComponentInParent<Enemy>();
-        if (CanSummon(enemy))
+        if (!overlayedEnemies.Contains(enemy))
         {
-            Debug.Log("Summoning " + enemy);
-            Summon(enemy);
-        }
-
-        if (CanExplode(enemy))
-        {
-            Debug.Log("Exploding " + enemy);
-            enemy.Explode();
+            overlayedEnemies.Add(enemy);
         }
     }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        Enemy enemy = other.gameObject.GetComponentInParent<Enemy>();
+        if (overlayedEnemies.Contains(enemy))
+        {
+            overlayedEnemies.Remove(enemy);
+        }
+    }
+    //void OnTriggerStay2D(Collider2D other)
+    //{
+    //    Enemy enemy = other.gameObject.GetComponentInParent<Enemy>();
+    //    if (CanSummon(enemy))
+    //    {
+    //        Debug.Log("Summoning " + enemy);
+    //        Summon(enemy);
+    //    }
+
+    //    if (CanExplode(enemy))
+    //    {
+    //        Debug.Log("Exploding " + enemy);
+    //        enemy.Explode();
+    //    }
+    //}
 
     bool CanSummon(Enemy enemy)
     {
@@ -601,16 +598,26 @@ public class SummonCircle : MonoBehaviour {
 
     void Summon(Enemy enemy)
     {
-        SummonSpot summonSpot = GetFreeSummonSpot();
-        if (summonSpot != null)
+        if (currentSummonSpotGroup.Summon(enemy))
         {
+            player.GetAnimator().SetBool("Summon", true);
             summons.Add(enemy);
-            summonSpot.enemy = enemy;
-            enemy.Resurrect(summonSpot);
             enemy.summonCircle = this;
-            
-            //outlineController.AddObject(OutlineController.HIGHLIGHT_TYPE.RESSURECTED, enemy.gameObject);
+
+            audioSource.PlayOneShot(summonClip);
         }
+        //SummonSpot summonSpot = GetFreeSummonSpot();
+        //if (summonSpot != null)
+        //{
+        //    player.GetAnimator().SetBool("Summon", true);
+
+        //    summons.Add(enemy);
+        //    summonSpot.enemy = enemy;
+        //    enemy.Resurrect(summonSpot);
+        //    enemy.summonCircle = this;
+
+        //    //outlineController.AddObject(OutlineController.HIGHLIGHT_TYPE.RESSURECTED, enemy.gameObject);
+        //}
     }
 
     public void Remove(Enemy enemy)

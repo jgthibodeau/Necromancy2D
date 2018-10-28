@@ -53,7 +53,7 @@ public class AiController : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, controller.avoidanceDistance, controller.avoidanceLayers);
         if (hit.collider != null)
         {
-            Debug.Log(gameObject.name + " hit " + hit.collider.gameObject.name + ", falling back to A*");
+            //Debug.Log(gameObject.name + " hit " + hit.collider.gameObject.name + ", falling back to A*");
             target = aStarTarget;
             direction = target - (Vector2)transform.position;
         }

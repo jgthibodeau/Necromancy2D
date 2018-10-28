@@ -40,13 +40,15 @@ GameObject:
   - component: {fileID: 114805900338502692}
   - component: {fileID: 114734612235618306}
   - component: {fileID: 114326408381235832}
-  - component: {fileID: 114720623227369958}
-  - component: {fileID: 114141616323149960}
-  - component: {fileID: 114773052425546960}
   - component: {fileID: 82658622292510530}
   - component: {fileID: 95720152660711236}
   - component: {fileID: 114938452999935502}
   - component: {fileID: 114856550953603270}
+  - component: {fileID: 114994056894128196}
+  - component: {fileID: 114468889660652990}
+  - component: {fileID: 114607219051302524}
+  - component: {fileID: 114395973031226266}
+  - component: {fileID: 114173647325454774}
   m_Layer: 18
   m_Name: Skeleton
   m_TagString: Untagged
@@ -377,7 +379,7 @@ GameObject:
   - component: {fileID: 4425973323025266}
   - component: {fileID: 58008640258435900}
   - component: {fileID: 114022265681053042}
-  m_Layer: 18
+  m_Layer: 10
   m_Name: WeaponCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -656,7 +658,7 @@ GameObject:
   - component: {fileID: 4115488488803214}
   - component: {fileID: 58426487799721992}
   - component: {fileID: 114554768476941760}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: AllyWeaponCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1471,7 +1473,7 @@ CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1899193963378496}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -1479,7 +1481,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: -0.00000011920929, y: 0.0000009536743}
   serializedVersion: 2
-  m_Radius: 0.8
+  m_Radius: 1
 --- !u!64 &64022402836488568
 MeshCollider:
   m_ObjectHideFlags: 1
@@ -1503,7 +1505,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: d7ae067a1a0334441bc55f91fee3b54d, type: 3}
+  m_audioClip: {fileID: 8300000, guid: e94ebc5ec74808249943ab34e8c30339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.25
   m_Pitch: 0.9
@@ -1640,6 +1642,9 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 0
+  radius: 0.5
+  canHitMultiple: 0
+  alreadyHit: []
 --- !u!114 &114080733360379038
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1683,7 +1688,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &114141616323149960
+--- !u!114 &114173647325454774
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1691,33 +1696,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1066583563380872}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a68716bbfcd13804f8ef8653f0d3d5f6, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b3ea2361ecd37445aa3214d7c3d314e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followState: 0
-  player: {fileID: 0}
-  playerHealth: {fileID: 0}
-  enemy: {fileID: 0}
-  target: {fileID: 0}
-  minDistance: 5
-  desiredDistance: 0
-  maxDistance: 10
-  attackDistance: 0
-  attackRate: 0
-  attackDelay: 0
-  stayAlerted: 0
-  visionRadius: 50
-  alertedVisionRadius: 75
-  alerted: 0
-  minChangeDirTime: 0
-  maxChangeDirTime: 0
-  currentChangeDirTime: 0
-  wanderSpeed: 500
-  chaseSpeed: 1000
-  wanderTurnSpeed: 25
-  chaseTurnSpeed: 25
-  minWanderChangeTime: 1
-  maxWanderChangeTime: 3
+  explosionPrefab: {fileID: 1407214313728936, guid: 281d57c38dbe1604cad8f02d6052278d,
+    type: 2}
 --- !u!114 &114181276552420514
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1744,15 +1727,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8cf5253ac341c41aa1804ec79d2149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeState: 2
+  initialState: 3
   aliveGraphics: {fileID: 1344750812568244}
   deadGraphics: {fileID: 1548809016722906}
   launchedGraphics: {fileID: 1295057733205244}
   player: {fileID: 0}
   summonCircle: {fileID: 0}
-  enemyBehavior: {fileID: 0}
-  allyBehavior: {fileID: 0}
-  launchedBehavior: {fileID: 0}
+  rigidBody: {fileID: 0}
   enemyLayer: 0
   allyLayer: 0
   deadLayer: 0
@@ -1770,8 +1751,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   defaultAnimator: {fileID: 0}
+  currentAnimator: {fileID: 0}
   audioSource: {fileID: 82658622292510530}
   attackClip: {fileID: 0}
+  minAttackPitch: 0.8
+  maxAttackPitch: 0.9
   corpseExplosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
     type: 2}
   avoidanceAngle: 0
@@ -1779,6 +1763,17 @@ MonoBehaviour:
   damage: 1
   weaponCollider: {fileID: 114022265681053042}
   allyWeaponCollider: {fileID: 114554768476941760}
+--- !u!114 &114395973031226266
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1066583563380872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 947ccae7778c50b4993d33f3e2035af2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114440724933482448
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1816,6 +1811,29 @@ MonoBehaviour:
   z: 1
   frozenRotation: {x: 0, y: 0, z: 0}
   useStartingRotation: 0
+--- !u!114 &114468889660652990
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1066583563380872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34218cc9674cc414684c221ddbe592e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDistance: 2
+  desiredDistance: 3
+  maxDistance: 10
+  attackDistance: 6
+  attackRate: 1
+  attackDelay: 0
+  stayAlerted: 1
+  visionRadius: 75
+  minChangeDirTime: 0
+  maxChangeDirTime: 0
+  speed: 1000
+  turnSpeed: 25
 --- !u!114 &114469097220203650
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1858,6 +1876,9 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 0
+  radius: 1
+  canHitMultiple: 1
+  alreadyHit: []
 --- !u!114 &114606660418974650
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1881,7 +1902,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 32768
   rb: {fileID: 0}
---- !u!114 &114720623227369958
+--- !u!114 &114607219051302524
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1889,13 +1910,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1066583563380872}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de116893d8b27214b9fe65a4d797708b, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c863346c1f336f44b25db6a4c3142a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followState: 0
-  player: {fileID: 0}
-  summonSpot: {fileID: 0}
-  enemy: {fileID: 0}
   minDistance: 0.25
   maxDistance: 5
   speedScaleDistance: 10
@@ -1915,9 +1932,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invincible: 0
-  maxHealth: 2
+  maxHealth: 1
   resurrectHealth: 1
-  currentHealth: 2
+  currentHealth: 1
   lowDamageThreshold: 0
   lowDamageScale: 0
   score: 100
@@ -1929,6 +1946,12 @@ MonoBehaviour:
   minSpawnForce: {x: -1, y: 1, z: -1}
   maxSpawnForce: {x: 1, y: 2, z: 1}
   destroyOnDeath: 1
+  alwaysResurrectable: 0
+  flashTime: 0.75
+  invicibleWhileFlashing: 0
+  flashAlternateRate: 0.1
+  mainRenderer: {fileID: 137199559299756386}
+  flashMaterial: {fileID: 2100000, guid: faa2c63091209e546aed14da6345e2c2, type: 2}
 --- !u!114 &114747552674139220
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1940,22 +1963,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6603ed6902c60b84e9febd739900e2b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114773052425546960
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1066583563380872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6a817f1fa5834a4591e3e9d72aa8e07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemy: {fileID: 0}
-  launched: 0
-  launchForce: {x: 0, y: 0, z: 0}
-  explosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
-    type: 2}
 --- !u!114 &114805900338502692
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2043,7 +2050,8 @@ MonoBehaviour:
     useGraphRaycasting: 0
   traversableTags: -1
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  graphMask: -1
+  graphMask:
+    value: -1
 --- !u!114 &114975224329726048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2057,6 +2065,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 114469097220203650}
   health: {fileID: 114734612235618306}
+--- !u!114 &114994056894128196
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1066583563380872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acc25fdd6c39f3d41a2e5ca200cde632, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visionRadius: 50
+  speed: 500
+  turnSpeed: 25
+  minWanderChangeTime: 1
+  maxWanderChangeTime: 3
 --- !u!119 &119485645083502520
 Projector:
   m_ObjectHideFlags: 1

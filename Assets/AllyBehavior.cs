@@ -46,13 +46,14 @@ public class AllyBehavior : MonoBehaviour
         entityController.turnSpeed = turnSpeed;
         entityController.RotateAwayFrom(player);
 
-        if (attacking)
-        {
-            entityController.speed = attackMoveSpeed;
-        }
-        else
-        {
-            entityController.speed = speed;
-        }
+        //if (attacking)
+        //{
+        //    entityController.speed = attackMoveSpeed;
+        //}
+        //else
+        //{
+        //    entityController.speed = speed;
+        //}
+        entityController.speed = speed;
     }
 }

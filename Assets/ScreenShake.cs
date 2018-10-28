@@ -41,7 +41,7 @@ public class ScreenShake : MonoBehaviour
     void Update() {
         if (shakeDuration > 0 && !MyGameManager.instance.isPaused)
         {
-            Debug.Log("Shaking " + shakeAmount);
+            //Debug.Log("Shaking " + shakeAmount);
             transform.localPosition = transform.localPosition + (Vector3)Random.insideUnitCircle * shakeAmount;
             shakeDuration -= Time.deltaTime * decreaseFactor;
         } else

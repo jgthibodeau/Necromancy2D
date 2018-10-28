@@ -7,6 +7,7 @@ using UnityStandardAssets.Characters.ThirdPerson;
 [RequireComponent(typeof(EntityController))]
 [RequireComponent(typeof(Health))]
 [RequireComponent(typeof(Stamina))]
+[RequireComponent(typeof(AudioSource))]
 public class Player : MonoBehaviour
 {
     private LevelManager levelManager;
@@ -14,6 +15,13 @@ public class Player : MonoBehaviour
     private EnemyLauncher enemyLauncher;
     private Health health;
     private Stamina stamina;
+    private Rigidbody2D rigidbody;
+    private Animator animator;
+    private AudioSource audioSource;
+    public AudioClip dashClip;
+    public float minDashPitch = 1f;
+    public float maxDashPitch = 1f;
+
     [Range(0f, 1f)]
     public float criticalHealthPercent = 0.25f;
 
@@ -37,7 +45,15 @@ public class Player : MonoBehaviour
         enemyLauncher = GetComponent<EnemyLauncher>();
         health = GetComponent<Health>();
         stamina = GetComponent<Stamina>();
+        rigidbody = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+        audioSource = GetComponent<AudioSource>();
         screenShake = ScreenShake.instance;
+    }
+
+    public Animator GetAnimator()
+    {
+        return animator;
     }
 
     void Update()
@@ -45,6 +61,8 @@ public class Player : MonoBehaviour
 
         if (!health.IsDead())
         {
+            animator.SetFloat("Speed", rigidbody.velocity.magnitude);
+
             Aim();
             //if (!aiming)
             if (!enemyLauncher.HasEnemy())
@@ -52,9 +70,8 @@ public class Player : MonoBehaviour
                 Attack();
             }
             MovePlayer();
-        } else
+        } else if (!alreadyDead)
         {
-            controller.Stop();
             KillPlayer();
         }
     }
@@ -71,12 +88,19 @@ public class Player : MonoBehaviour
                 launching = true;
                 enemyLauncher.SetEnemyToLaunch();
             }
-        }
-        if (!aiming || !Util.GetButton("Launch"))
+
+            if (!Util.GetButton("Launch"))
+            {
+                launching = false;
+                enemyLauncher.LaunchEnemy();
+            }
+
+            animator.SetBool("Aim", enemyLauncher.HasEnemy());
+        } else
         {
-            launching = false;
-            enemyLauncher.LaunchEnemy();
+            enemyLauncher.Clear();
         }
+        
     }
 
     private bool dashing;
@@ -96,6 +120,8 @@ public class Player : MonoBehaviour
         {
             if (stamina.HasStamina() && (Util.GetButtonDown("Dash") || secondDash))
             {
+                audioSource.pitch = Random.Range(minDashPitch, maxDashPitch);
+                audioSource.PlayOneShot(dashClip);
                 stamina.UseStamina();
                 dashEffect.Play();
                 dashing = true;
@@ -185,8 +211,9 @@ public class Player : MonoBehaviour
         //    }
         //}
 
-        if (Util.GetButton("Attack") && attackDelay <= 0 && summonCircle.HasSummons())
+        if (Util.GetButton("Attack") && !aiming && attackDelay <= 0 && summonCircle.HasSummons())
         {
+            animator.SetTrigger("Attack");
             attackDelay = attackRate;
             screenShake.Shake(attackShakeTime, attackShakeScale);
             Swarm();
@@ -199,6 +226,7 @@ public class Player : MonoBehaviour
         {
             return;
         }
+        animator.SetTrigger("Attack");
 
         foreach (Enemy enemy in summonCircle.summons)
         {
@@ -229,27 +257,39 @@ public class Player : MonoBehaviour
                 controller.speed = normalSpeed;
             }
 
-            //if mouse outside of summon area that is populated with minions
-            if (!summonCircle.IsMouseInSummonSpots() && !aiming)
-            {
-                controller.RotateTowards(summonCircle.transform);
-            }
+            ////if mouse outside of summon area that is populated with minions
+            //if (!summonCircle.IsMouseInSummonSpots() && !aiming)
+            //{
+            //    controller.RotateTowards(summonCircle.transform);
+            //}
         }
-        else
+        //else
+        //{
+        //    controller.SetMoveDirection(Vector2.zero);
+        //}
+        //if mouse outside of summon area that is populated with minions
+        if (!summonCircle.IsMouseInSummonSpots() && !aiming)
         {
-            controller.SetMoveDirection(Vector2.zero);
+            controller.RotateTowards(summonCircle.transform);
         }
     }
 
+    bool alreadyDead = false;
     void KillPlayer()
     {
+        alreadyDead = true;
         controller.Stop();
         levelManager.OnPlayerDeath();
+        animator.SetBool("Dead", true);
     }
 
     public void TakeDamage(float damage)
     {
         screenShake.Shake(playerDamageShakeTime, damage * playerDamageShakeScale);
+        if (!alreadyDead)
+        {
+            animator.SetTrigger("Damage");
+        }
     }
 
     public bool IsDead()

@@ -3,17 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SummonSpot : MonoBehaviour {
-    //public class Formation : MonoBehaviour
-    //{
-    //    public Transform normalPosition;
-    //    public Transform attackPosition;
-    //}
-
-    //public Formation frontFormation;
-    //public Formation circleFormation;
-
-    //private Formation currentFormation;
-
     public Enemy enemy;
     public int spotIndex;
     public int rowIndex;
@@ -24,20 +13,21 @@ public class SummonSpot : MonoBehaviour {
     public float xOffsetScale;
     public float yOffsetScale;
 
-    private SummonCircle summonCircle;
-
     public void SetEnemy(Enemy e)
     {
         if (e != null)
         {
+            this.enemy = e;
             e.SetSummonSpot(this);
+        } else
+        {
+            this.enemy = null;
         }
-        this.enemy = e;
     }
 
     public bool HasEnemy()
     {
-        return enemy != null;
+        return enemy != null;// && enemy.gameObject != null;
     }
 
     void Start()

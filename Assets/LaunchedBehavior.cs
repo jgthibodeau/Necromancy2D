@@ -5,11 +5,11 @@ using UnityEngine;
 public class LaunchedBehavior : MonoBehaviour {
 
     public Enemy enemy;
-    public bool launched;
     public Vector3 launchForce;
     private EntityController controller;
     private AiController aiController;
-    private Rigidbody2D rigidbody2D;
+    private Rigidbody2D rb;
+    private bool launched = false;
 
     public GameObject explosionPrefab;
 
@@ -17,19 +17,17 @@ public class LaunchedBehavior : MonoBehaviour {
     {
         controller = GetComponent<EntityController>();
         aiController = GetComponent<AiController>();
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     public void DoBehavior()
     {
-        if (launched)
-        {
-            rigidbody2D.AddForce(launchForce);
+        rb.AddForce(launchForce);
 
-            aiController.targetTransform = null;
-            controller.Stop();
-            controller.active = false;
-        }
+        aiController.targetTransform = null;
+        controller.Stop();
+        controller.active = false;
+        launched = true;
     }
 
     void OnCollisionEnter2D(Collision2D other)

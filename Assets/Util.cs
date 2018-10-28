@@ -108,6 +108,11 @@ public class Util : MonoBehaviour {
 		return layermask == (layermask | (1 << layer));
 	}
 
+    public static int LayermaskToLayer(LayerMask layerMask)
+    {
+        return Mathf.RoundToInt(Mathf.Log(layerMask.value, 2));
+    }
+
     public static float ConvertScale(float oldMin, float oldMax, float newMin, float newMax, float value)
     {
         value = Mathf.Clamp(value, oldMin, oldMax);

@@ -36,7 +36,6 @@ public class EnemyBehavior : MonoBehaviour
     public float minWanderChangeTime, maxWanderChangeTime;
     private float currentWanderChangeTime;
 
-
     private float distanceToTarget = Mathf.Infinity;
 
     void Awake()

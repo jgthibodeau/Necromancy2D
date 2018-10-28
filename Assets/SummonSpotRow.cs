@@ -11,9 +11,7 @@ public class SummonSpotRow : MonoBehaviour
     private int summonSpotCount;
     private int emptySummonSpotCount;
     private int filledSummonSpotCount;
-
-    int nextFreeSummonSpot;
-
+    
     public void Initialize()
     {
         int index = transform.GetSiblingIndex();
@@ -61,14 +59,17 @@ public class SummonSpotRow : MonoBehaviour
     public void RefreshSummonSpotCount()
     {
         emptySummonSpotCount = 0;
+        filledSummonSpotCount = 0;
         foreach (SummonSpot spot in summonSpots)
         {
-            if (!spot.HasEnemy())
+            if (spot.HasEnemy())
+            {
+                filledSummonSpotCount++;
+            } else
             {
                 emptySummonSpotCount++;
             }
         }
-        filledSummonSpotCount = SummonSpotCount() - emptySummonSpotCount;
     }
 
     private void Reorganize()
@@ -95,7 +96,7 @@ public class SummonSpotRow : MonoBehaviour
 
     public SummonSpot GetFreeSummonSpot()
     {
-        if (GetEmptySummonSpotCount() == 0) { return null; }
+        if (emptySummonSpotCount == 0) { return null; }
 
         foreach (SummonSpot spot in summonSpots)
         {

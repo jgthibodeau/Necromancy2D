@@ -9,7 +9,8 @@ public class MeleeEnemy : Enemy {
 
     void Update()
     {
-        if (lifeState == LIFE_STATE.DEAD)
+        //if (lifeState == LIFE_STATE.DEAD)
+        if (fsm.CurrentStateID == StateID.Dead)
         {
             StopAttack();
         }
@@ -17,11 +18,14 @@ public class MeleeEnemy : Enemy {
 
     public override void StartAttack()
     {
-        if (lifeState == LIFE_STATE.ALIVE)
+        StopAttack();
+        //if (lifeState == LIFE_STATE.ALIVE)
+        if (fsm.CurrentStateID == StateID.Chase)
         {
             weaponCollider.Activate(damage, currentTargetLayers);
         }
-        if (lifeState == LIFE_STATE.RESURECTED)
+        //if (lifeState == LIFE_STATE.RESURECTED)
+        if (fsm.CurrentStateID == StateID.Ally)
         {
             allyWeaponCollider.Activate(damage, currentTargetLayers);
         }
