@@ -14,11 +14,10 @@ using cakeslice;
 [RequireComponent(typeof(DeadState))]
 public abstract class Enemy : MonoBehaviour
 {
-    //public enum LIFE_STATE { ALIVE, DEAD, RESURECTED, LAUNCHED }
-    //public LIFE_STATE lifeState;
-
     public FSMSystem fsm;
     public StateID initialState;
+    [SerializeField]
+    private StateID currentState;
     public void SetTransition(Transition t) { fsm.PerformTransition(t); }
 
     public GameObject aliveGraphics;
@@ -27,10 +26,6 @@ public abstract class Enemy : MonoBehaviour
 
     public Transform player;
     public SummonCircle summonCircle;
-
-    //public EnemyBehavior enemyBehavior;
-    //public AllyBehavior allyBehavior;
-    //public LaunchedBehavior launchedBehavior;
     private EntityController controller;
     private Health health;
     private Outline outline;
@@ -75,56 +70,52 @@ public abstract class Enemy : MonoBehaviour
     public virtual void Start()
     {
         player = MyGameManager.instance.GetPlayer().transform;
-
-        //enemyBehavior.enemy = this;
-        //allyBehavior.enemy = this;
-        //launchedBehavior.enemy = this;
     }
 
-    WanderState wander;
-    ChasePlayerState chase;
-    AllyState ally;
-    DeadState dead;
-    LaunchedState launched;
-    private void MakeFSM()
+    protected WanderState wanderState;
+    protected ChasePlayerState chaseState;
+    protected AllyState allyState;
+    protected DeadState deadState;
+    protected LaunchedState launchedState;
+    public virtual void MakeFSM()
     {
+        if (fsm != null)
+        {
+            return;
+        }
+
         fsm = new FSMSystem(initialState);
 
-        wander = GetComponent<WanderState>();
-        wander.AddTransition(Transition.LostPlayer, StateID.Wander);
-        wander.AddTransition(Transition.SawPlayer, StateID.Chase);
-        wander.AddTransition(Transition.Dead, StateID.Dead);
-        fsm.AddState(wander);
+        wanderState = GetComponent<WanderState>();
+        wanderState.AddTransition(Transition.LostPlayer, StateID.Wander);
+        wanderState.AddTransition(Transition.SawPlayer, StateID.Chase);
+        fsm.AddState(wanderState);
 
-        chase = GetComponent<ChasePlayerState>();
-        chase.AddTransition(Transition.SawPlayer, StateID.Chase);
-        chase.AddTransition(Transition.LostPlayer, StateID.Wander);
-        chase.AddTransition(Transition.Dead, StateID.Dead);
-        fsm.AddState(chase);
+        chaseState = GetComponent<ChasePlayerState>();
+        chaseState.AddTransition(Transition.SawPlayer, StateID.Chase);
+        chaseState.AddTransition(Transition.LostPlayer, StateID.Wander);
+        fsm.AddState(chaseState);
 
-        ally = GetComponent<AllyState>();
-        ally.AddTransition(Transition.Launch, StateID.Launched);
-        ally.AddTransition(Transition.Dead, StateID.Dead);
-        ally.AddTransition(Transition.Resurrect, StateID.Ally);
-        fsm.AddState(ally);
+        allyState = GetComponent<AllyState>();
+        allyState.AddTransition(Transition.Launch, StateID.Launched);
+        allyState.AddTransition(Transition.Resurrect, StateID.Ally);
+        fsm.AddState(allyState);
 
-        dead = GetComponent<DeadState>();
-        dead.AddTransition(Transition.Resurrect, StateID.Ally);
-        dead.AddTransition(Transition.Dead, StateID.Dead);
-        fsm.AddState(dead);
+        deadState = GetComponent<DeadState>();
+        deadState.AddTransition(Transition.Resurrect, StateID.Ally);
+        fsm.AddState(deadState);
 
-        launched = GetComponent<LaunchedState>();
-        launched.AddTransition(Transition.Launch, StateID.Launched);
-        fsm.AddState(launched);
+        launchedState = GetComponent<LaunchedState>();
+        launchedState.AddTransition(Transition.Launch, StateID.Launched);
+        fsm.AddState(launchedState);
+
+        fsm.AddTransitionToAllStates(Transition.Dead, StateID.Dead);
 
         Debug.Log("current state " + fsm.CurrentStateID);
     }
 
     void RetreiveScripts()
     {
-        //enemyBehavior = GetComponent<EnemyBehavior>();
-        //allyBehavior = GetComponent<AllyBehavior>();
-        //launchedBehavior = GetComponent<LaunchedBehavior>();
         controller = GetComponent<EntityController>();
         health = GetComponent<Health>();
         outline = aliveGraphics.GetComponentInChildren<Outline>();
@@ -143,26 +134,23 @@ public abstract class Enemy : MonoBehaviour
 
     public bool CanResurrect()
     {
-        //return lifeState == LIFE_STATE.DEAD;
         return fsm.CurrentStateID == StateID.Dead;
     }
 
     public bool CanExplode()
     {
-        //return lifeState == LIFE_STATE.DEAD || lifeState == LIFE_STATE.LAUNCHED;
         return fsm.CurrentStateID == StateID.Dead || fsm.CurrentStateID == StateID.Launched;
     }
 
     public bool IsAlive()
     {
-        //return lifeState == LIFE_STATE.ALIVE;
         return fsm.CurrentStateID == StateID.Wander || fsm.CurrentStateID == StateID.Chase;
     }
 
     public virtual void FixedUpdate() {
+        currentState = fsm.CurrentStateID;
         if (health.currentHealth <= 0)
         {
-            //lifeState = LIFE_STATE.DEAD;
             SetTransition(Transition.Dead);
             currentAnimator.SetFloat("Speed", 0);
         }
@@ -174,11 +162,8 @@ public abstract class Enemy : MonoBehaviour
         fsm.CurrentState.Act(gameObject);
 
         
-
-        //switch(lifeState)
         switch(fsm.CurrentStateID)
         {
-            //case LIFE_STATE.ALIVE:
             case StateID.Wander:
             case StateID.Chase:
                 gameObject.layer = enemyLayer;
@@ -190,10 +175,7 @@ public abstract class Enemy : MonoBehaviour
                 launchedGraphics.SetActive(false);
                 
                 SetAnimator(aliveAnimator);
-
-                //enemyBehavior.DoBehavior();
                 break;
-            //case LIFE_STATE.RESURECTED:
             case StateID.Ally:
                 gameObject.layer = allyLayer;
                 currentTargetLayers = allyTargetLayers;
@@ -204,10 +186,7 @@ public abstract class Enemy : MonoBehaviour
                 launchedGraphics.SetActive(false);
 
                 SetAnimator(aliveAnimator);
-
-                //allyBehavior.DoBehavior();
                 break;
-            //case LIFE_STATE.DEAD:
             case StateID.Dead:
                 gameObject.layer = deadLayer;
 
@@ -220,7 +199,6 @@ public abstract class Enemy : MonoBehaviour
 
                 controller.Stop();
                 break;
-            //case LIFE_STATE.LAUNCHED:
             case StateID.Launched:
                 gameObject.layer = launchedLayer;
                 
@@ -230,8 +208,6 @@ public abstract class Enemy : MonoBehaviour
                 launchedGraphics.SetActive(true);
                 
                 SetAnimator(aliveAnimator);
-
-                //launchedBehavior.DoBehavior();
                 break;
         }
     }
@@ -258,8 +234,7 @@ public abstract class Enemy : MonoBehaviour
     public void Resurrect(SummonSpot summonSpot)
     {
         RetreiveScripts();
-
-        //lifeState = LIFE_STATE.RESURECTED;
+        
         SetTransition(Transition.Resurrect);
         health.Resurrect();
         SetSummonSpot(summonSpot);
@@ -267,39 +242,26 @@ public abstract class Enemy : MonoBehaviour
 
     public void SetSummonSpot(SummonSpot summonSpot)
     {
-        ally.SetSummonSpot(summonSpot);
-        //    if (allyBehavior.summonSpot != null)
-        //    {
-        //        allyBehavior.summonSpot.SetEnemy(null);
-        //    }
-        //    allyBehavior.summonSpot = summonSpot;
+        allyState.SetSummonSpot(summonSpot);
     }
 
     public void SetAllySpeed(float allySpeed)
     {
         Debug.Log("Setting ally speed " + allySpeed);
-        //allyBehavior.speed = allySpeed;
-        ally.speed = allySpeed;
+        allyState.speed = allySpeed;
     }
 
     public void SetAllyAttack(bool attack)
     {
-        ally.attacking = attack;
+        allyState.attacking = attack;
     }
 
     public void Launch(Vector2 force)
     {
-        //lifeState = LIFE_STATE.LAUNCHED;
         SetTransition(Transition.Launch);
-        //launchedBehavior.launchForce = force;
-        launched.SetLaunchForce(force);
+        launchedState.SetLaunchForce(force);
 
-        //if (allyBehavior.summonSpot != null)
-        //{
-        //    allyBehavior.summonSpot.enemy = null;
-        //    allyBehavior.summonSpot = null;
-        //}
-        ally.ResetSummonSpot();
+        allyState.ResetSummonSpot();
 
         if (summonCircle != null)
         {
@@ -323,48 +285,4 @@ public abstract class Enemy : MonoBehaviour
     public virtual void StartAttack() { }
 
     public virtual void StopAttack() { }
-
-    public float avoidanceAngle, avoidanceRange;
-
-    //public Vector2 Avoidance(Vector2 direction)
-    //{
-    //    LayerMask avoidLayers = lifeState == LIFE_STATE.ALIVE ? aliveAvoidanceLayers : allyAvoidanceLayers;
-
-    //    Vector2 forward = direction.normalized;
-    //    Vector2 movePerpLeftVector = Vector2.Perpendicular(forward);
-    //    Vector3 left = (forward + movePerpLeftVector * avoidanceAngle).normalized;
-    //    Vector3 right = (forward - movePerpLeftVector * avoidanceAngle).normalized;
-    //    Debug.DrawRay(transform.position, forward * avoidanceRange);
-    //    Debug.DrawRay(transform.position, left * avoidanceRange);
-    //    Debug.DrawRay(transform.position, right * avoidanceRange);
-
-    //    bool forwardAsteroid = Physics2D.Raycast(transform.position, forward, avoidanceRange, avoidLayers);
-    //    bool leftAsteroid = Physics2D.Raycast(transform.position, left, avoidanceRange, avoidLayers);
-    //    bool rightAsteroid = Physics2D.Raycast(transform.position, right, avoidanceRange, avoidLayers);
-    //    bool anyAsteroids = forwardAsteroid || leftAsteroid || rightAsteroid;
-
-    //    if (anyAsteroids)
-    //    {
-    //        bool avoidToLeft = false;
-    //        if (leftAsteroid == rightAsteroid)
-    //        {
-    //            avoidToLeft = (Random.value > 0.5f);
-    //        }
-    //        else if (rightAsteroid)
-    //        {
-    //            avoidToLeft = true;
-    //        }
-
-    //        if (avoidToLeft)
-    //        {
-    //            direction = Quaternion.Euler(0, 0, avoidanceAngle) * direction;
-    //        }
-    //        else
-    //        {
-    //            direction = Quaternion.Euler(0, 0, -avoidanceAngle) * direction;
-    //        }
-    //    }
-
-    //    return direction;
-    //}
 }

@@ -1097,7 +1097,11 @@ GameObject:
   - component: {fileID: 114794687854712692}
   - component: {fileID: 114965843529462382}
   - component: {fileID: 114882005703688298}
-  - component: {fileID: 114701640919985280}
+  - component: {fileID: 114039776375594404}
+  - component: {fileID: 114495904420541584}
+  - component: {fileID: 114147839949017394}
+  - component: {fileID: 114546415278789534}
+  - component: {fileID: 114200478320475972}
   m_Layer: 10
   m_Name: Skeleton Boss
   m_TagString: Untagged
@@ -1988,7 +1992,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1798578550353902}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -155.99997, y: 321.62, z: 0}
+  m_LocalPosition: {x: -64, y: 321.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4993253831291406}
@@ -5186,6 +5190,17 @@ MonoBehaviour:
   maxLifeTime: 0.3
   play: 1
   pause: 0
+--- !u!114 &114039776375594404
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1798578550353902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73196001c92fef449a8350986d4892e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114087372777922880
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5207,6 +5222,28 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114147839949017394
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1798578550353902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3f4c1daddf7c7499c0adbbc0c683dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114200478320475972
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1798578550353902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e7a74798eaf43341b8d9a2cfd759d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114308718153704688
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5219,10 +5256,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visionRadius: 100
-  speed: 500
-  turnSpeed: 0.5
-  minWanderChangeTime: 1
-  maxWanderChangeTime: 3
+  speed: 0
+  turnSpeed: 0
+  minWanderChangeTime: Infinity
+  maxWanderChangeTime: Infinity
 --- !u!114 &114404037145205966
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5286,6 +5323,20 @@ MonoBehaviour:
   bezierTangentLength: 0.4
   offset: 0.2
   factor: 0.1
+--- !u!114 &114495904420541584
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1798578550353902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3675bbbe5d5d66643bdfe7b19871012b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawner: {fileID: 114454511823778018}
+  spawnTime: 2
+  currentSpawnTime: 0
 --- !u!114 &114522840402429692
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5329,6 +5380,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 32768
   rb: {fileID: 0}
+--- !u!114 &114546415278789534
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1798578550353902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e2c169ea821e3a4cb196ead5a7b6700, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114558379946466112
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5404,19 +5466,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114701640919985280
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1798578550353902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b3ea2361ecd37445aa3214d7c3d314e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
-    type: 2}
 --- !u!114 &114734861578067556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5477,7 +5526,7 @@ MonoBehaviour:
   desiredDistance: 0
   maxDistance: 10
   attackDistance: 200
-  attackRate: 0
+  attackRate: 3
   attackDelay: 0
   stayAlerted: 1
   visionRadius: 100
@@ -5598,7 +5647,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bb0f2cb6d55a004b9f9f751a5c31ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialState: 0
+  initialState: 1
+  currentState: 0
   aliveGraphics: {fileID: 1849119603112296}
   deadGraphics: {fileID: 1501896970069436}
   launchedGraphics: {fileID: 1320389387254388}
@@ -5629,9 +5679,12 @@ MonoBehaviour:
   maxAttackPitch: 0
   corpseExplosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
     type: 2}
-  avoidanceAngle: 0
-  avoidanceRange: 0
-  spawner: {fileID: 114454511823778018}
+  attackWeights:
+  - attackTransition: 9
+    weight: 25
+  attackChance: 0.5
+  attacksBeforeCooldown: 3
+  currentAttackCount: 0
 --- !u!114 &114987878166203404
 MonoBehaviour:
   m_ObjectHideFlags: 1

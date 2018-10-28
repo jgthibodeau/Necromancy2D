@@ -52,11 +52,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 public enum Transition
 {
     NullTransition = 0, // Use this transition to represent a non-existing transition in your system
-    SawPlayer = 1,
-    LostPlayer = 2,
-    Resurrect = 3,
-    Dead = 4,
-    Launch = 5
+    SawPlayer,
+    LostPlayer,
+    Resurrect,
+    Dead,
+    Launch,
+    Cooldown,
+    CooldownFinished,
+    BossJump,
+    BossSummon,
+    BossLaunch
 }
 
 /// <summary>
@@ -66,11 +71,15 @@ public enum Transition
 public enum StateID
 {
     NullStateID = 0, // Use this ID to represent a non-existing State in your system
-    Wander = 1,
-    Chase = 2,
-    Ally = 3,
-    Dead = 4,
-    Launched = 5
+    Wander,
+    Chase,
+    Ally,
+    Dead,
+    Launched,
+    CoolDown,
+    BossJump,
+    BossSummon,
+    BossLaunch
 }
 
 /// <summary>
@@ -250,6 +259,15 @@ public class FSMSystem
         {
             currentState = s;
             currentStateID = s.ID;
+        }
+    }
+
+    public void AddTransitionToAllStates(Transition trans, StateID id)
+    {
+        // Add the state to the List if it's not inside it
+        foreach (FSMState state in states)
+        {
+            state.AddTransition(trans, id);
         }
     }
 
