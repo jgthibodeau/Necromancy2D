@@ -821,7 +821,6 @@ GameObject:
   - component: {fileID: 114527738645061148}
   - component: {fileID: 114284253144732196}
   - component: {fileID: 114862208821411808}
-  - component: {fileID: 95241802936842056}
   - component: {fileID: 82294212745753046}
   - component: {fileID: 114137317686131752}
   - component: {fileID: 114128017502939150}
@@ -3069,24 +3068,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!95 &95241802936842056
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1705528105988264}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 914a92835a0929944b74285672688ad6, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!95 &95508978324640360
 Animator:
   serializedVersion: 3
@@ -3238,7 +3219,7 @@ MonoBehaviour:
   maxSpawnForce: {x: 1, y: 2, z: 1}
   destroyOnDeath: 0
   alwaysResurrectable: 0
-  flashTime: 0.75
+  flashTime: 0.5
   invicibleWhileFlashing: 0
   flashAlternateRate: 0.1
   mainRenderer: {fileID: 137325163734361672}
@@ -3321,6 +3302,7 @@ MonoBehaviour:
   desiredDistance: 3
   maxDistance: 10
   attackDistance: 6
+  initialAttackDelay: 0
   attackRate: 1
   attackDelay: 0
   stayAlerted: 1
@@ -3487,9 +3469,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialState: 1
+  currentState: 0
   aliveGraphics: {fileID: 1098358175931410}
   deadGraphics: {fileID: 1252512459633220}
   launchedGraphics: {fileID: 1327068329289452}
+  defaultColliders: []
   player: {fileID: 0}
   summonCircle: {fileID: 0}
   rigidBody: {fileID: 0}
@@ -3517,8 +3501,6 @@ MonoBehaviour:
   maxAttackPitch: 1
   corpseExplosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
     type: 2}
-  avoidanceAngle: 0
-  avoidanceRange: 0
   damage: 1
   weaponCollider: {fileID: 114992600352013180}
   allyWeaponCollider: {fileID: 114436708526279054}

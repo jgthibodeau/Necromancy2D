@@ -23,6 +23,7 @@ public class ChasePlayerState : FSMState
     private EntityController controller;
     private AiController aiController;
 
+    public float initialAttackDelay;
     public float attackRate;
     public float attackDelay;
 
@@ -39,6 +40,8 @@ public class ChasePlayerState : FSMState
         controller = GetComponent<EntityController>();
         aiController = GetComponent<AiController>();
         enemy = GetComponent<Enemy>();
+
+        attackDelay = initialAttackDelay;
     }
 
     void Start()
@@ -53,7 +56,7 @@ public class ChasePlayerState : FSMState
 
         if (!stayAlerted && target == null)
         {
-            npc.GetComponent<Enemy>().SetTransition(Transition.LostPlayer);
+            enemy.SetTransition(Transition.LostPlayer);
         }
     }
 

@@ -8,32 +8,76 @@ public class BossSummonState : FSMState
 
     public PrefabSpawner spawner;
     public float spawnTime;
-    [SerializeField]
     private float currentSpawnTime;
+
+    public int minSpawnCount, maxSpawnCount;
+    public bool done;
+
+    private int spawnCount;
+
+    private Enemy enemy;
+    private EntityController controller;
+    private Transform player;
+
+    void Start()
+    {
+        enemy = GetComponent<Enemy>();
+        controller = GetComponent<EntityController>();
+        player = MyGameManager.instance.GetPlayer().transform;
+    }
 
     public override void DoBeforeEntering()
     {
         base.DoBeforeEntering();
+        spawnCount = Random.Range(minSpawnCount, maxSpawnCount);
         currentSpawnTime = spawnTime;
+        done = false;
     }
 
     public override void DoBeforeLeaving()
     {
         base.DoBeforeLeaving();
-        spawner.active = false;
     }
 
     public override void Reason(GameObject npc)
     {
-        if (currentSpawnTime <= 0)
+        if (spawnCount <= 0)
         {
-            npc.GetComponent<Enemy>().SetTransition(Transition.SawPlayer);
+            enemy.SetTransition(Transition.SawPlayer);
         }
     }
 
     public override void Act(GameObject npc)
     {
-        currentSpawnTime -= Time.deltaTime;
-        spawner.active = true;
+        controller.Stop();
+        controller.RotateTowards(player);
+
+        if (spawnCount > 0)
+        {
+            if (currentSpawnTime > 0)
+            {
+                currentSpawnTime -= Time.fixedDeltaTime;
+            }
+            else
+            {
+                spawnCount--;
+                Spawn();
+            }
+        }
+    }
+
+    void Spawn()
+    {
+        enemy.currentAnimator.SetTrigger("Summon");
+
+        if (spawner.SpawnCount() < spawner.maxToSpawn)
+        {
+            spawner.Spawn(true);
+            currentSpawnTime = spawnTime;
+            spawnCount--;
+        } else
+        {
+            spawnCount = 0;
+        }
     }
 }

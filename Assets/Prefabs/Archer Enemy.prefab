@@ -2288,7 +2288,6 @@ GameObject:
   - component: {fileID: 114047315844912056}
   - component: {fileID: 114677761238655138}
   - component: {fileID: 114685845473693156}
-  - component: {fileID: 95498308974647870}
   - component: {fileID: 82301349154674950}
   - component: {fileID: 114358670722726240}
   - component: {fileID: 114189474354802774}
@@ -6099,24 +6098,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!95 &95498308974647870
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1794530329951670}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 914a92835a0929944b74285672688ad6, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!96 &96335435993246822
 TrailRenderer:
   serializedVersion: 2
@@ -6636,7 +6617,7 @@ MonoBehaviour:
   maxSpawnForce: {x: 1, y: 2, z: 1}
   destroyOnDeath: 0
   alwaysResurrectable: 0
-  flashTime: 0.75
+  flashTime: 0.5
   invicibleWhileFlashing: 0
   flashAlternateRate: 0.1
   mainRenderer: {fileID: 137452149252455740}
@@ -6656,6 +6637,7 @@ MonoBehaviour:
   desiredDistance: 20
   maxDistance: 30
   attackDistance: 30
+  initialAttackDelay: 0
   attackRate: 1.5
   attackDelay: 0
   stayAlerted: 1
@@ -6676,9 +6658,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialState: 1
+  currentState: 0
   aliveGraphics: {fileID: 1556174822473626}
   deadGraphics: {fileID: 1696736769375640}
   launchedGraphics: {fileID: 1476659343053314}
+  defaultColliders: []
   player: {fileID: 0}
   summonCircle: {fileID: 0}
   rigidBody: {fileID: 0}
@@ -6706,8 +6690,6 @@ MonoBehaviour:
   maxAttackPitch: 1
   corpseExplosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
     type: 2}
-  avoidanceAngle: 0
-  avoidanceRange: 0
   playerVelocity: {x: 0, y: 0, z: 0}
   leadPlayer: 0
   updatePlayerVelocityRate: 0

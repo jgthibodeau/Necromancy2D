@@ -37,6 +37,18 @@ public class AllyState : FSMState
         player = MyGameManager.instance.GetPlayer().transform;
     }
 
+    public override void DoBeforeEntering()
+    {
+        base.DoBeforeEntering();
+        enemy.SetOutlineColor(1);
+    }
+
+    public override void DoBeforeLeaving()
+    {
+        base.DoBeforeLeaving();
+        enemy.SetOutlineColor(1);
+    }
+
     public override void Reason(GameObject npc)
     {
         //// If the player has gone 30 meters away from the NPC, fire LostPlayer transition

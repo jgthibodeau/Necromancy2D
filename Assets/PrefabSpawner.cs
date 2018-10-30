@@ -8,6 +8,7 @@ public class PrefabSpawner: MonoBehaviour
     public struct SpawnWeight
     {
         public GameObject spawnable;
+        [Range(0,100)]
         public int weight;
     }
     public SpawnWeight[] spawnWeights;
@@ -16,6 +17,7 @@ public class PrefabSpawner: MonoBehaviour
 
     public List<GameObject> spawnedObjects;
 
+    public bool spawnOnTimer = true;
     public int initialSpawnCount;
 
     [Range(1, 100)]
@@ -42,11 +44,8 @@ public class PrefabSpawner: MonoBehaviour
             spawnables[i] = spawnWeights[i].spawnable;
             weights[i] = spawnWeights[i].weight;
         }
-
-        for (int i=0; i< initialSpawnCount; i++)
-        {
-            Spawn(true);
-        }
+        
+        SpawnAmount(initialSpawnCount, true);
     }
 
     void Update()
@@ -56,31 +55,43 @@ public class PrefabSpawner: MonoBehaviour
 
         CleanNullSpawns();
 
+        if (spawnOnTimer)
+        {
+            SpawnOnTimer();
+        }
+    }
+
+    public int SpawnCount()
+    {
+        return spawnedObjects.Count;
+    }
+
+    void CleanNullSpawns()
+    {
+        spawnedObjects.RemoveAll(item => item == null || IsDeadEnemy(item));
+    }
+
+    bool IsDeadEnemy(GameObject go)
+    {
+        return go.GetComponent<Enemy>() != null && !go.GetComponent<Enemy>().IsAlive();
+    }
+
+    void SpawnOnTimer()
+    {
         if (currentCoolDown > 0)
         {
             currentCoolDown -= Time.deltaTime;
-        } else if (CanSpawn())
+        }
+        else if (CanSpawn())
         {
             int spawnTimes = 1;
             if (spawnedObjects.Count == 0)
             {
                 spawnTimes = spawnCountWhenZero;
             }
-            for (; spawnTimes > 0; spawnTimes--)
-            {
-                Spawn(false);
-            }
+
+            Spawn(spawnTimes, false);
         }
-    }
-
-    void CleanNullSpawns()
-    {
-        spawnedObjects.RemoveAll(item => item == null || IsUnLiveEnemy(item));
-    }
-
-    bool IsUnLiveEnemy(GameObject go)
-    {
-        return go.GetComponent<Enemy>() != null && !go.GetComponent<Enemy>().IsAlive();
     }
 
     public bool CanSpawn()
@@ -89,10 +100,21 @@ public class PrefabSpawner: MonoBehaviour
         return active && !spawning && currentCoolDown <= 0 && spawnedObjects.Count < maxToSpawn;
     }
 
-    private void Spawn(bool overrideSpawnCheck)
+    public void SpawnAmount(int count, bool overrideSpawnCheck)
     {
-        int index = Util.GetRandomWeightedIndex(weights);
-        StartCoroutine(Spawn(index, overrideSpawnCheck));
+        for (int i = 0; i < count; i++)
+        {
+            Spawn(overrideSpawnCheck);
+        }
+    }
+
+    public void Spawn(bool overrideSpawnCheck)
+    {
+        if (spawnedObjects.Count < maxToSpawn)
+        {
+            int index = Util.GetRandomWeightedIndex(weights);
+            StartCoroutine(Spawn(index, overrideSpawnCheck));
+        }
     }
     
     private IEnumerator Spawn(int index, bool overrideSpawnCheck)

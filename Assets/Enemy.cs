@@ -6,7 +6,6 @@ using cakeslice;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(EntityController))]
 [RequireComponent(typeof(AudioSource))]
-[RequireComponent(typeof(Animator))]
 
 [RequireComponent(typeof(WanderState))]
 [RequireComponent(typeof(ChasePlayerState))]
@@ -23,6 +22,8 @@ public abstract class Enemy : MonoBehaviour
     public GameObject aliveGraphics;
     public GameObject deadGraphics;
     public GameObject launchedGraphics;
+
+    public Collider2D[] defaultColliders;
 
     public Transform player;
     public SummonCircle summonCircle;
@@ -124,12 +125,12 @@ public abstract class Enemy : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (defaultAnimator == null)
         {
-            defaultAnimator = GetComponent<Animator>();
+            defaultAnimator = GetComponentInChildren<Animator>();
         }
-        currentAnimator = defaultAnimator;
 
         aliveAnimator = aliveGraphics.GetComponentInChildren<Animator>();
         deadAnimator = deadGraphics.GetComponentInChildren<Animator>();
+        currentAnimator = aliveAnimator;
 }
 
     public bool CanResurrect()
@@ -168,8 +169,7 @@ public abstract class Enemy : MonoBehaviour
             case StateID.Chase:
                 gameObject.layer = enemyLayer;
                 currentTargetLayers = aliveTargetLayers;
-
-                SetOutlineColor(0);
+                
                 aliveGraphics.SetActive(true);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(false);
@@ -179,8 +179,7 @@ public abstract class Enemy : MonoBehaviour
             case StateID.Ally:
                 gameObject.layer = allyLayer;
                 currentTargetLayers = allyTargetLayers;
-
-                SetOutlineColor(1);
+                
                 aliveGraphics.SetActive(true);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(false);
@@ -189,8 +188,7 @@ public abstract class Enemy : MonoBehaviour
                 break;
             case StateID.Dead:
                 gameObject.layer = deadLayer;
-
-                SetOutlineColor(0);
+                
                 aliveGraphics.SetActive(false);
                 deadGraphics.SetActive(true);
                 launchedGraphics.SetActive(false);
@@ -202,7 +200,6 @@ public abstract class Enemy : MonoBehaviour
             case StateID.Launched:
                 gameObject.layer = launchedLayer;
                 
-                SetOutlineColor(1);
                 aliveGraphics.SetActive(true);
                 deadGraphics.SetActive(false);
                 launchedGraphics.SetActive(true);
@@ -212,7 +209,7 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    void SetOutlineColor(int c)
+    public void SetOutlineColor(int c)
     {
         if (outline != null)
         {
@@ -239,6 +236,10 @@ public abstract class Enemy : MonoBehaviour
         health.Resurrect();
         SetSummonSpot(summonSpot);
     }
+
+    public virtual void Jump() { }
+    public virtual void Land() { }
+    public virtual void StopLand() { }
 
     public void SetSummonSpot(SummonSpot summonSpot)
     {

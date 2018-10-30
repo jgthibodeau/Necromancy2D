@@ -39,7 +39,7 @@ public class WanderState : FSMState
         CheckForTarget();
         if (target != null)
         {
-            npc.GetComponent<Enemy>().SetTransition(Transition.SawPlayer);
+            enemy.SetTransition(Transition.SawPlayer);
         }
     }
 

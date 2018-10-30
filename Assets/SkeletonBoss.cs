@@ -10,9 +10,9 @@ public class SkeletonBoss : Enemy
         public Transition attackTransition;
         [Range(0,100)]
         public int weight;
+        public bool canRepeat;
     }
     public AttackWeight[] attackWeights;
-    private Transition[] attackTransitions;
     private int[] weights;
 
     [Range(0,1)]
@@ -20,6 +20,7 @@ public class SkeletonBoss : Enemy
     public int attacksBeforeCooldown;
     [SerializeField]
     private int currentAttackCount;
+    private int lastAttack = -1;
     
     BossAllyState bossAllyState;
     BossJumpState bossJumpState;
@@ -42,6 +43,7 @@ public class SkeletonBoss : Enemy
 
         chaseState = GetComponent<ChasePlayerState>();
         chaseState.AddTransition(Transition.SawPlayer, StateID.Chase);
+        chaseState.AddTransition(Transition.Cooldown, StateID.CoolDown);
 
         chaseState.AddTransition(Transition.BossJump, StateID.BossJump);
         chaseState.AddTransition(Transition.BossSummon, StateID.BossSummon);
@@ -50,17 +52,14 @@ public class SkeletonBoss : Enemy
 
         bossJumpState = GetComponent<BossJumpState>();
         bossJumpState.AddTransition(Transition.SawPlayer, StateID.Chase);
-        bossJumpState.AddTransition(Transition.Cooldown, StateID.CoolDown);
         fsm.AddState(bossJumpState);
 
         bossSummonState = GetComponent<BossSummonState>();
         bossSummonState.AddTransition(Transition.SawPlayer, StateID.Chase);
-        bossSummonState.AddTransition(Transition.Cooldown, StateID.CoolDown);
         fsm.AddState(bossSummonState);
 
         bossLaunchState = GetComponent<BossLaunchState>();
         bossLaunchState.AddTransition(Transition.SawPlayer, StateID.Chase);
-        bossLaunchState.AddTransition(Transition.Cooldown, StateID.CoolDown);
         fsm.AddState(bossLaunchState);
 
         coolDownState = GetComponent<CoolDownState>();
@@ -85,12 +84,10 @@ public class SkeletonBoss : Enemy
     public override void Start()
     {
         base.Start();
-
-        attackTransitions = new Transition[attackWeights.Length];
+        
         weights = new int[attackWeights.Length];
         for (int i = 0; i < attackWeights.Length; i++)
         {
-            attackTransitions[i] = attackWeights[i].attackTransition;
             weights[i] = attackWeights[i].weight;
         }
     }
@@ -108,13 +105,38 @@ public class SkeletonBoss : Enemy
     {
         if (Random.value <= attackChance)
         {
-            int chosenAttack = Util.GetRandomWeightedIndex(weights);
-            Transition chosenTransition = attackTransitions[chosenAttack];
-            Debug.Log("Chose attack " + chosenTransition);
+            int attackIndex;
+            AttackWeight chosenAttack;
+            do
+            {
+                attackIndex = Util.GetRandomWeightedIndex(weights);
+                chosenAttack = attackWeights[attackIndex];
+            }
+            while (!chosenAttack.canRepeat && attackIndex == lastAttack);
 
-            SetTransition(chosenTransition);
+            Debug.Log("Chose attack " + chosenAttack.attackTransition);
+
+            SetTransition(chosenAttack.attackTransition);
 
             currentAttackCount++;
         }
+    }
+
+    public override void Jump()
+    {
+        base.Jump();
+        bossJumpState.Jump();
+    }
+
+    public override void Land()
+    {
+        base.Land();
+        bossJumpState.Land();
+    }
+
+    public override void StopLand()
+    {
+        base.Land();
+        bossJumpState.StopLand();
     }
 }

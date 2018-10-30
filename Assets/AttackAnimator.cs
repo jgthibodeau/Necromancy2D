@@ -19,4 +19,19 @@ public class AttackAnimator : MonoBehaviour {
     {
         enemy.StopAttack();
     }
+
+    public void Jump()
+    {
+        enemy.Jump();
+    }
+
+    public void StartLand()
+    {
+        enemy.Land();
+    }
+
+    public void StopLand()
+    {
+        enemy.StopLand();
+    }
 }

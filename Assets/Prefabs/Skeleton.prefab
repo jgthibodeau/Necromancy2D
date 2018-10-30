@@ -41,7 +41,6 @@ GameObject:
   - component: {fileID: 114734612235618306}
   - component: {fileID: 114326408381235832}
   - component: {fileID: 82658622292510530}
-  - component: {fileID: 95720152660711236}
   - component: {fileID: 114938452999935502}
   - component: {fileID: 114856550953603270}
   - component: {fileID: 114994056894128196}
@@ -1609,24 +1608,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!95 &95720152660711236
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1066583563380872}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 914a92835a0929944b74285672688ad6, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114022265681053042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1728,9 +1709,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialState: 3
+  currentState: 0
   aliveGraphics: {fileID: 1344750812568244}
   deadGraphics: {fileID: 1548809016722906}
   launchedGraphics: {fileID: 1295057733205244}
+  defaultColliders: []
   player: {fileID: 0}
   summonCircle: {fileID: 0}
   rigidBody: {fileID: 0}
@@ -1758,8 +1741,6 @@ MonoBehaviour:
   maxAttackPitch: 0.9
   corpseExplosionPrefab: {fileID: 1051633240588574, guid: 5ab0493131d824048842b126face9c57,
     type: 2}
-  avoidanceAngle: 0
-  avoidanceRange: 0
   damage: 1
   weaponCollider: {fileID: 114022265681053042}
   allyWeaponCollider: {fileID: 114554768476941760}
@@ -1826,6 +1807,7 @@ MonoBehaviour:
   desiredDistance: 3
   maxDistance: 10
   attackDistance: 6
+  initialAttackDelay: 0
   attackRate: 1
   attackDelay: 0
   stayAlerted: 1
@@ -1947,7 +1929,7 @@ MonoBehaviour:
   maxSpawnForce: {x: 1, y: 2, z: 1}
   destroyOnDeath: 1
   alwaysResurrectable: 0
-  flashTime: 0.75
+  flashTime: 0.5
   invicibleWhileFlashing: 0
   flashAlternateRate: 0.1
   mainRenderer: {fileID: 137199559299756386}
