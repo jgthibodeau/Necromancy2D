@@ -20,6 +20,11 @@ public class AttackAnimator : MonoBehaviour {
         enemy.StopAttack();
     }
 
+    public void PreJump()
+    {
+        enemy.PreJump();
+    }
+
     public void Jump()
     {
         enemy.Jump();

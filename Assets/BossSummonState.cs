@@ -6,6 +6,8 @@ public class BossSummonState : FSMState
 {
     protected override StateID GetID() { return StateID.BossSummon; }
 
+    public float turnSpeed;
+
     public PrefabSpawner spawner;
     public float spawnTime;
     private float currentSpawnTime;
@@ -32,6 +34,7 @@ public class BossSummonState : FSMState
         spawnCount = Random.Range(minSpawnCount, maxSpawnCount);
         currentSpawnTime = spawnTime;
         done = false;
+        controller.turnSpeed = turnSpeed;
     }
 
     public override void DoBeforeLeaving()

@@ -61,8 +61,9 @@ namespace TeamUtility.IO
 		public event Action Loaded;
 		public event Action Saved;
 		public event RemoteUpdateDelegate RemoteUpdate;
-		
-		[SerializeField]
+        public InputDevice currentInputDeviceType;
+
+        [SerializeField]
 		[FormerlySerializedAs("inputConfigurations")]
 		private List<InputConfiguration> _inputConfigurations = new List<InputConfiguration>();
 
@@ -118,7 +119,7 @@ namespace TeamUtility.IO
 			get { return _inputConfigurations; }
 		}
 
-		public string playerOneDefault
+        public string playerOneDefault
 		{
 			get { return _playerOneDefault; }
 			set { _playerOneDefault = value; }
@@ -738,16 +739,17 @@ namespace TeamUtility.IO
         /// Changes the active input configuration.
         /// </summary>
 		[Obsolete("Use the method overload that takes in the player ID", true)]
-        public static void SetInputConfiguration(string name)
+        public static void SetInputConfiguration(string name, InputDevice inputDeviceType)
         {
-            SetInputConfiguration(name, PlayerID.One);
+            SetInputConfiguration(name, PlayerID.One, inputDeviceType);
         }
 
         /// <summary>
         /// Changes the active input configuration.
         /// </summary>
-        public static void SetInputConfiguration(string name, PlayerID playerID)
+        public static void SetInputConfiguration(string name, PlayerID playerID, InputDevice inputDeviceType)
 		{
+            _instance.currentInputDeviceType = inputDeviceType;
 			PlayerID? playerWhoUsesInputConfig = _instance.IsInputConfigurationInUse(name);
 
 			if (playerWhoUsesInputConfig.HasValue && playerWhoUsesInputConfig.Value != playerID)

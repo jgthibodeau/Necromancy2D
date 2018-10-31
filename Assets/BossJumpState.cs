@@ -18,7 +18,7 @@ public class BossJumpState : FSMState
 
     public bool crossHairInAir, crossHairInDelay;
 
-    private enum JumpState { PREPARE, JUMPING, INAIR, INAIRDELAY, FALLING, LANDING, DONE }
+    private enum JumpState { PREPARE, JUMPING, IN_AIR_MOVING, IN_AIR_FROZEN, FALLING, LANDING, DONE }
     [SerializeField]
     private JumpState jumpState;
 
@@ -26,12 +26,15 @@ public class BossJumpState : FSMState
     public float desiredDistance;
     public float maxDistance;
 
+    public bool exactFollowPlayer = true;
     public float speed;
     public float turnSpeed;
 
     public GameObject shockwave;
 
     public GameObject crosshair;
+    public Projector jumpProjector;
+    public float minProjectorSize, maxProjectorSize;
 
     void Start()
     {
@@ -66,7 +69,7 @@ public class BossJumpState : FSMState
                 jumpState = JumpState.JUMPING;
                 currentTime = airTime;
                 break;
-            case JumpState.INAIR:
+            case JumpState.IN_AIR_MOVING:
                 //show reticle for landing zone
                 if (crossHairInAir && !crosshair.activeSelf) {
                     crosshair.SetActive(true);
@@ -76,29 +79,38 @@ public class BossJumpState : FSMState
                 {
                     currentTime -= Time.fixedDeltaTime;
 
-                    aiController.targetTransform = player;
+                    if (exactFollowPlayer)
+                    {
+                        transform.position = player.position;
+                    }
+                    else
+                    {
+                        aiController.targetTransform = player;
 
-                    aiController.minDistance = minDistance;
-                    aiController.maxDistance = maxDistance;
-                    aiController.desiredDistance = desiredDistance;
+                        aiController.minDistance = minDistance;
+                        aiController.maxDistance = maxDistance;
+                        aiController.desiredDistance = desiredDistance;
 
-                    controller.speed = speed;
-                    controller.turnSpeed = turnSpeed;
-                    controller.RotateTowards(player);
+                        controller.speed = speed;
+                        controller.turnSpeed = turnSpeed;
+                        controller.RotateTowards(player);
+                    }
                 }
                 else
                 {
                     currentTime = landDelayTime;
-                    jumpState = JumpState.INAIRDELAY;
+                    jumpState = JumpState.IN_AIR_FROZEN;
                     controller.Stop();
                 }
                 break;
-            case JumpState.INAIRDELAY:
+            case JumpState.IN_AIR_FROZEN:
                 //show reticle for landing zone
                 if (crossHairInDelay && !crosshair.activeSelf)
                 {
                     crosshair.SetActive(true);
                 }
+
+                UpdateProjector(currentTime, landDelayTime);
 
                 if (currentTime > 0)
                 {
@@ -110,24 +122,32 @@ public class BossJumpState : FSMState
                 }
                 else
                 {
+                    controller.Stop();
                     enemy.currentAnimator.SetTrigger("Land");
                     jumpState = JumpState.FALLING;
-                    controller.Stop();
                 }
                 break;
         }
     }
 
-    public void Jump()
+    private void UpdateProjector(float currentTime, float maxTime)
     {
-        Debug.Log("jumping");
+        float size = maxProjectorSize - Util.ConvertScale(0, maxTime, minProjectorSize, maxProjectorSize, currentTime);
+        jumpProjector.orthographicSize = size;
+    }
+
+    public void PreJump()
+    {
         foreach (Collider2D c in enemy.defaultColliders)
         {
             c.enabled = false;
         }
+    }
 
+    public void Jump()
+    {
         transform.position = player.position;
-        jumpState = JumpState.INAIR;
+        jumpState = JumpState.IN_AIR_MOVING;
     }
 
     public void Land()

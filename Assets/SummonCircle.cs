@@ -48,18 +48,10 @@ public class SummonCircle : MonoBehaviour {
         outlineController = MyGameManager.instance.GetOutlineController();
         fadeAudio = GetComponent<FadeAudio>();
         audioSource = GetComponent<AudioSource>();
-
-        //if (generateSummonSpots)
-        //{
-        //    GenerateSummonSpots();
-        //} else
-        //{
+        
         ReadSummonSpots();
-        //}
     }
-
-    //public Transform[] summonSpotBases;
-    //public Transform[] summonSpotAttackBases;
+    
     public List<SummonSpotGroup> summonSpotGroups;
     public List<SummonSpotGroup> summonSpotAttackGroups;
     private SummonSpotGroup currentSummonSpotGroup;
@@ -117,6 +109,7 @@ public class SummonCircle : MonoBehaviour {
         {
             currentSummonSpotGroup.MoveTo(newGroup, attack);
             currentSummonSpotGroup = newGroup;
+            currrentSummonSpotGroupIndex = i;
         }
     }
 
@@ -131,217 +124,12 @@ public class SummonCircle : MonoBehaviour {
     public int numberOfExtraSummonSpotsPerRow = 2;
     public int maxSummonSpotsPerRow = 10;
     public int currrentSummonSpotGroup;
-    //public SummonSpotRow[] summonSpotRows;
     public GameObject summonSpotRowPrefab;
     public GameObject summonSpotPrefab;
-    //void GenerateSummonSpots()
-    //{
-    //    if (!generateSummonSpots)
-    //    {
-    //        return;
-    //    }
-    //    generateSummonSpots = false;
-
-    //    if (summonSpotRows != null)
-    //    {
-    //        for (int i = 0; i < summonSpotRows.Length; i++)
-    //        {
-    //            SummonSpotRow row = summonSpotRows[i];
-    //            for (int j = 0; j < row.summonSpots.Length; j++)
-    //            {
-    //                GameObject.Destroy(row.summonSpots[j].gameObject);
-    //            }
-    //            GameObject.Destroy(row.gameObject);
-    //        }
-    //    }
-
-    //    summonSpotRows = new SummonSpotRow[numberOfSummonSpotRows];
-
-    //    int spotsPerRow = summonSpotsInInitialRow;
-    //    maxSummons = 0;
-    //    for (int i=0; i<numberOfSummonSpotRows; i++)
-    //    {
-    //        maxSummons += spotsPerRow;
-    //        Vector3 rowPosition = initialSummonSpot.position;
-    //        rowPosition.y += i * summonSpotRowDistance;
-
-    //        GameObject rowInst = GameObject.Instantiate(summonSpotRowPrefab, rowPosition, Quaternion.identity, initialSummonSpot);
-    //        SummonSpotRow summonSpotRow = rowInst.GetComponent <SummonSpotRow>();
-    //        summonSpotRows[i] = summonSpotRow;
-
-    //        if (i > 0)
-    //        {
-    //            summonSpotRows[i - 1].nextRow = summonSpotRow;
-    //            summonSpotRow.prevRow = summonSpotRows[i - 1];
-    //        }
-
-
-    //        summonSpotRow.summonSpots = new SummonSpot[spotsPerRow];
-    //        if (spotsPerRow % 2 == 0)
-    //        {
-    //            rowPosition.x -= summonSpotDistance * 0.5f;
-    //        }
-    //        for (int j=0; j<spotsPerRow; j++)
-    //        {
-    //            Vector3 spotPosition = rowPosition;
-    //            int offSetCount = (j + 1) / 2;
-    //            int spotIndex = 0;
-
-    //            if (j % 2 == 0)
-    //            {
-    //                spotPosition.x -= offSetCount * summonSpotDistance;
-    //                spotIndex = -offSetCount;
-    //            }
-    //            else
-    //            {
-    //                spotPosition.x += offSetCount * summonSpotDistance;
-    //                spotIndex = offSetCount;
-    //            }
-
-
-    //            if (spotsPerRow % 2 == 0)
-    //            {
-    //                offSetCount = j / 2;
-    //            }
-    //            spotPosition.y += summonSpotYOffset * Mathf.Pow(offSetCount, summonSpotYOffsetPower);
-
-    //            GameObject spotInst = GameObject.Instantiate(summonSpotPrefab, spotPosition, Quaternion.identity, rowInst.transform);
-    //            SummonSpot summonSpot = spotInst.GetComponent<SummonSpot>();
-    //            summonSpot.rowIndex = i;
-    //            summonSpot.spotIndex = spotIndex;
-    //            summonSpotRow.summonSpots[j] = summonSpot;
-    //        }
-
-    //        if (spotsPerRow < maxSummonSpotsPerRow)
-    //        {
-    //            spotsPerRow = Mathf.Clamp(spotsPerRow + numberOfExtraSummonSpotsPerRow, 0, maxSummonSpotsPerRow);
-    //        }
-    //    }
-    //}
     
     SummonSpot GetFreeSummonSpot()
     {
         return currentSummonSpotGroup.GetFreeSummonSpot();
-    }
-
-    public float mouseWithinSummonsRadius = 1f;
-    Vector2 mousePolygonStart;
-    public bool IsMouseInSummonSpots()
-    {
-        return false;
-        //Vector3 mouse = Util.MouseInWorld();
-
-        //int numberOfPoints = 2 * (numberOfSummonSpotRows);
-        //Vector2[] polygonPoints = new Vector2[numberOfPoints];
-
-        //int currentPoint = 0;
-        ////first row
-        //SummonSpot[] spots = summonSpotRows[0].summonSpots;
-        //int maxSpot;
-        //Transform point1Transform;
-        //Vector2 point1;
-        //Transform point2Transform;
-        //Vector2 point2;
-        //if (spots.Length == 1)
-        //{
-        //    Transform pointTransform = spots[0].transform.transform;
-        //    Vector2 point = pointTransform.position;
-        //    point -= (Vector2)(pointTransform.up * mouseWithinSummonsRadius);
-        //    point -= (Vector2)(pointTransform.right * mouseWithinSummonsRadius);
-        //    polygonPoints[currentPoint++] = point;
-
-        //    point += 2 * (Vector2)(pointTransform.right * mouseWithinSummonsRadius);
-        //    polygonPoints[currentPoint++] = point;
-        //} else
-        //{
-        //    maxSpot = spots.Length - 1;
-        //    point1Transform = spots[maxSpot].transform;
-        //    point1 = point1Transform.position;
-        //    point2Transform = spots[maxSpot - 1].transform;
-        //    point2 = point2Transform.position;
-
-        //    point1 -= (Vector2)(point1Transform.up * mouseWithinSummonsRadius);
-        //    point2 -= (Vector2)(point1Transform.up * mouseWithinSummonsRadius);
-
-        //    if (point1Transform.localPosition.x < 0)
-        //    {
-        //        point1 -= (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        point2 += (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        polygonPoints[currentPoint++] = point2;
-        //        polygonPoints[currentPoint++] = point1;
-        //    }
-        //    else
-        //    {
-        //        point2 -= (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        point1 += (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        polygonPoints[currentPoint++] = point1;
-        //        polygonPoints[currentPoint++] = point2;
-        //    }
-        //}
-        ////additional rows
-        //Vector2[] otherSidePoints = new Vector2[summonSpotRows.Length - 2];
-        //for (int i = 1; i < summonSpotRows.Length-1; i++)
-        //{
-        //    spots = summonSpotRows[i].summonSpots;
-        //    maxSpot = spots.Length - 1;
-        //    point1Transform = spots[maxSpot].transform;
-        //    point1 = point1Transform.position;
-        //    point2Transform = spots[maxSpot - 1].transform;
-        //    point2 = point2Transform.position;
-
-        //    if (point1Transform.localPosition.x < 0)
-        //    {
-        //        point1 -= (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        point2 += (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        polygonPoints[currentPoint++] = point1;
-        //        otherSidePoints[i - 1] = point2;
-        //    } else
-        //    {
-        //        point2 -= (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        point1 += (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //        polygonPoints[currentPoint++] = point2;
-        //        otherSidePoints[i - 1] = point1;
-        //    }
-        //}
-        ////top row
-        //spots = summonSpotRows[summonSpotRows.Length-1].summonSpots;
-        //maxSpot = spots.Length - 1;
-        //point1Transform = spots[maxSpot].transform;
-        //point1 = point1Transform.position;
-        //point2Transform = spots[maxSpot - 1].transform;
-        //point2 = point2Transform.position;
-
-        //point1 += (Vector2)(point1Transform.up * mouseWithinSummonsRadius);
-        //point2 += (Vector2)(point1Transform.up * mouseWithinSummonsRadius);
-
-        //if (point1Transform.localPosition.x < 0)
-        //{
-        //    point1 -= (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //    point2 += (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //    polygonPoints[currentPoint++] = point1;
-        //    polygonPoints[currentPoint++] = point2;
-        //}
-        //else
-        //{
-        //    point2 -= (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //    point1 += (Vector2)(point1Transform.right * mouseWithinSummonsRadius);
-        //    polygonPoints[currentPoint++] = point2;
-        //    polygonPoints[currentPoint++] = point1;
-        //}
-
-        ////other side
-        //for (int i= otherSidePoints.Length-1; i>=0; i--)
-        //{
-        //    polygonPoints[currentPoint++] = otherSidePoints[i];
-        //}
-
-        //for (int i=0; i< polygonPoints.Length-1; i++)
-        //{
-        //    Debug.DrawLine(polygonPoints[i], polygonPoints[i + 1], Color.cyan);
-        //}
-        //Debug.DrawLine(polygonPoints[0], polygonPoints[polygonPoints.Length - 1], Color.cyan);
-
-        //return Util.PolygonContainsPoint(mouse, polygonPoints);
     }
 
     public bool attacking = false;
@@ -349,36 +137,12 @@ public class SummonCircle : MonoBehaviour {
     {
         attacking = true;
         SetSummonSpotGroup(currrentSummonSpotGroupIndex, true);
-        //foreach (SummonSpotRow row in currentSummonSpotGroup)
-        //{
-        //    foreach (SummonSpot spot in row.summonSpots)
-        //    {
-        //        //spot.attacking = true;
-        //        if (spot.HasEnemy())
-        //        {
-        //            //spot.attacking = true;
-        //            spot.enemy.allyBehavior.attacking = true;
-        //        }
-        //    }
-        //}
     }
 
     public void StopAttack()
     {
         attacking = false;
         SetSummonSpotGroup(currrentSummonSpotGroupIndex, false);
-        //SummonSpotRow[] summonSpotRows = GetCurrentSummonSpotGroup();
-        //foreach (SummonSpotRow row in currentSummonSpotGroup)
-        //{
-        //    foreach (SummonSpot spot in row.summonSpots)
-        //    {
-        //        //spot.attacking = false;
-        //        if (spot.HasEnemy())
-        //        {
-        //            spot.enemy.allyBehavior.attacking = false;
-        //        }
-        //    }
-        //}
     }
 
     int SummonCount()
@@ -387,6 +151,7 @@ public class SummonCircle : MonoBehaviour {
     }
 
     // Update is called once per frame
+    Enemy previousClosestCorpse;
     void Update ()
     {
         string summonText = SummonCount() + " / " + maxSummonsPerGroup[0];
@@ -419,8 +184,24 @@ public class SummonCircle : MonoBehaviour {
         if (!player.IsDead())
         {
             summonEnabled = Util.GetButton("Summon");
-            corpseExplosionTriggered = Util.GetButtonDown("CorpseExplosion");
-            corpseExplosion = Util.GetButton("CorpseExplosion");
+            //corpseExplosionTriggered = Util.GetButtonDown("CorpseExplosion");
+            //corpseExplosion = Util.GetButton("CorpseExplosion");
+            if (Util.GetButton("CorpseExplosion"))
+            {
+                if (!corpseExplosionTriggered && !corpseExplosion)
+                {
+                    corpseExplosion = true;
+                    corpseExplosionTriggered = true;
+                } else
+                {
+                    corpseExplosion = true;
+                    corpseExplosionTriggered = false;
+                }
+            } else
+            {
+                corpseExplosion = false;
+                corpseExplosionTriggered = false;
+            }
 
             if (summonEnabled)
             {
@@ -435,28 +216,43 @@ public class SummonCircle : MonoBehaviour {
                     }
                 }
             }
-            if (corpseExplosionTriggered)
+            Enemy closestCorpse = null;
+            float distance = Mathf.Infinity;
+            foreach (Enemy enemy in overlayedEnemies)
             {
-                Enemy closestEnemy = null;
-                float distance = Mathf.Infinity;
-                foreach (Enemy enemy in overlayedEnemies)
+                if (CanExplode(enemy))
                 {
-                    if (CanExplode(enemy))
+                    float currentDistance = Vector2.Distance(transform.position, enemy.transform.position);
+                    if (currentDistance < distance)
                     {
-                        float currentDistance = Vector2.Distance(transform.position, enemy.transform.position);
-                        if (currentDistance < distance)
-                        {
-                            distance = currentDistance;
-                            closestEnemy = enemy;
-                        }
+                        distance = currentDistance;
+                        closestCorpse = enemy;
                     }
                 }
-                if (closestEnemy != null)
+            }
+
+            if (closestCorpse != previousClosestCorpse)
+            {
+                if (previousClosestCorpse != null)
+                {
+                    previousClosestCorpse.RemoveDeadOutlineColor();
+                }
+                if (closestCorpse != null)
+                {
+                    closestCorpse.SetDeadOutlineColor(2);
+                }
+                previousClosestCorpse = closestCorpse;
+            }
+
+            if (closestCorpse != null)
+            {
+
+                if (corpseExplosionTriggered)
                 {
                     player.GetAnimator().SetTrigger("Explode");
-                    Debug.Log("Exploding " + closestEnemy);
-                    closestEnemy.Explode();
-                    overlayedEnemies.Remove(closestEnemy);
+                    Debug.Log("Exploding " + closestCorpse);
+                    closestCorpse.Explode();
+                    overlayedEnemies.Remove(closestCorpse);
                 }
             }
         }
@@ -591,9 +387,7 @@ public class SummonCircle : MonoBehaviour {
     bool CanSummon(Enemy enemy)
     {
         Debug.Log("Trying to summon " + enemy);
-        return summonEnabled &&
-            enemy != null
-            && enemy.CanResurrect();
+        return enemy != null && enemy.CanResurrect();
     }
 
     void Summon(Enemy enemy)
@@ -631,18 +425,27 @@ public class SummonCircle : MonoBehaviour {
     bool CanExplode(Enemy enemy)
     {
         Debug.Log("Trying to explode " + enemy);
-        return corpseExplosionTriggered
-            && enemy != null
-            && enemy.CanExplode();
+        return enemy != null && enemy.CanExplode();
     }
-
+    
+    public float axisAmount = 5f;
     void MoveSummonCircle()
     {
-        Vector3 mouse = Util.MouseInWorld();
-
         Vector3 position = transform.position;
-        position.x = mouse.x;
-        position.y = mouse.y;
+
+        if (Util.GetCurrentInputDeviceType() == TeamUtility.IO.InputDevice.Joystick)
+        {
+            Vector2 joystick = new Vector2(Util.GetAxis("Horizontal Right"), Util.GetAxis("Vertical Right"));
+            joystick = Vector2.ClampMagnitude(joystick, 1);
+            position.x = player.transform.position.x + joystick.x * axisAmount;
+            position.y = player.transform.position.y + joystick.y * axisAmount;
+        }
+        else
+        {
+            Vector3 mouse = Util.MouseInWorld();
+            position.x = mouse.x;
+            position.y = mouse.y;
+        }
 
         transform.position = position;
     }

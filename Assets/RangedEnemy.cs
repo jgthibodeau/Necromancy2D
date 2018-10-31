@@ -18,6 +18,7 @@ public class RangedEnemy : Enemy
     public int enemyFireballLayer;
 
     public bool aimAtMouse = true;
+    public float maxAimAngle = 45f;
 
     public override void Start()
     {
@@ -43,6 +44,13 @@ public class RangedEnemy : Enemy
             if (aimAtMouse)
             {
                 aimPoint = summonCircle.transform.position;
+
+                //if angle too big
+                Vector2 direction = aimPoint - (Vector2)firePosition.position;
+                if (Vector2.Angle(transform.up, direction) > maxAimAngle)
+                {
+                    aimPoint = firePosition.position + transform.up;
+                }
             }
             else
             {
@@ -59,11 +67,10 @@ public class RangedEnemy : Enemy
 
     void FireAt(Vector2 point, GameObject bullet)
     {
-        Vector2 position = (Vector2)firePosition.position + Random.insideUnitCircle * fireRandomness;
-        Quaternion rotation = Quaternion.LookRotation((point - position), Vector3.forward);
-        GameObject bulletInst = GameObject.Instantiate(bullet, position, rotation);
-        //Bullet b = bulletInst.GetComponent<Bullet>();
-        //bulletInst.layer = layer;
+        Vector2 actualFirePosition = (Vector2)firePosition.position + Random.insideUnitCircle * fireRandomness;
+        
+        Quaternion rotation = Quaternion.LookRotation((point - actualFirePosition), Vector3.forward);
+        GameObject bulletInst = GameObject.Instantiate(bullet, actualFirePosition, rotation);
     }
 
 

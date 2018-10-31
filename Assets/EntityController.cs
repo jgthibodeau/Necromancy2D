@@ -12,9 +12,13 @@ public class EntityController : MonoBehaviour
 
     public float velocity;
 
-	public float speed = 6f;
+    public enum ControllerType { VELOCITY, ACCELERATED_VELOCITY, FORCE, POSITION }
+    public ControllerType controllerType = ControllerType.VELOCITY;
+
+    public float speed = 6f;
     public float turnSpeed = 5f;
     public float speedScale = 1f;
+    public float acceleration = 1f;
 
     public float avoidanceDistance = 3f;
     public LayerMask avoidanceLayers;
@@ -82,8 +86,22 @@ public class EntityController : MonoBehaviour
         //rb.MoveRotation(Mathf.LerpAngle(rb.rotation, angle, turnSpeed * Time.deltaTime));
         //rb.MovePosition(rb.position + moveDirection * speed * Time.fixedDeltaTime);
 
-        rb.velocity = (moveDirection * Time.fixedDeltaTime * speed * speedScale);
-        //rb.AddForce(moveDirection * speed);
+        switch(controllerType)
+        {
+            case ControllerType.VELOCITY:
+                rb.velocity = (moveDirection * Time.fixedDeltaTime * speed * speedScale);
+                break;
+            case ControllerType.ACCELERATED_VELOCITY:
+                Vector2 desiredVelocity = (moveDirection * speed * speedScale);
+                rb.velocity = Vector2.Lerp(rb.velocity, desiredVelocity, Time.fixedDeltaTime * acceleration);
+                break;
+            case ControllerType.FORCE:
+                rb.AddForce(moveDirection * Time.fixedDeltaTime * speed * speedScale);
+                break;
+            case ControllerType.POSITION:
+                rb.MovePosition(rb.position + moveDirection * Time.fixedDeltaTime * speed * speedScale);
+                break;
+        }
     }
     
     public void RotateTowardsMotion()

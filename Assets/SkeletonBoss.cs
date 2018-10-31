@@ -27,6 +27,12 @@ public class SkeletonBoss : Enemy
     BossSummonState bossSummonState;
     BossLaunchState bossLaunchState;
     CoolDownState coolDownState;
+    WeakState weakState;
+
+    public GameObject lifeBar;
+
+    private WeakSpotHealth weakSpotHealth;
+
     public override void MakeFSM()
     {
         if (fsm != null)
@@ -66,7 +72,11 @@ public class SkeletonBoss : Enemy
         coolDownState.AddTransition(Transition.CooldownFinished, StateID.Chase);
         fsm.AddState(coolDownState);
 
-        
+        weakState = GetComponent<WeakState>();
+        weakState.AddTransition(Transition.CooldownFinished, StateID.Chase);
+        fsm.AddState(weakState);
+
+
         bossAllyState = GetComponent<BossAllyState>();
         bossAllyState.AddTransition(Transition.Launch, StateID.Launched);
         bossAllyState.AddTransition(Transition.Resurrect, StateID.Ally);
@@ -77,6 +87,7 @@ public class SkeletonBoss : Enemy
         fsm.AddState(deadState);
 
         fsm.AddTransitionToAllStates(Transition.Dead, StateID.Dead);
+        fsm.AddTransitionToAllStates(Transition.Weakened, StateID.Weak);
 
         Debug.Log("current state " + fsm.CurrentStateID);
     }
@@ -84,7 +95,11 @@ public class SkeletonBoss : Enemy
     public override void Start()
     {
         base.Start();
-        
+
+        weakSpotHealth = GetComponent<WeakSpotHealth>();
+
+        lifeBar.SetActive(false);
+
         weights = new int[attackWeights.Length];
         for (int i = 0; i < attackWeights.Length; i++)
         {
@@ -94,10 +109,24 @@ public class SkeletonBoss : Enemy
 
     public void Update()
     {
+        if (alerted && !lifeBar.activeSelf)
+        {
+            lifeBar.SetActive(true);
+        }
+        if (!alerted && lifeBar.activeSelf)
+        {
+            lifeBar.SetActive(false);
+        }
+
         if (fsm.CurrentStateID == StateID.Chase && currentAttackCount >= attacksBeforeCooldown)
         {
             //TODO switch to cooldown
             currentAttackCount = 0;
+        }
+
+        if (fsm.CurrentStateID != StateID.Weak && fsm.CurrentStateID != StateID.Dead && weakSpotHealth.IsWeak())
+        {
+            SetTransition(Transition.Weakened);
         }
     }
 
@@ -120,6 +149,12 @@ public class SkeletonBoss : Enemy
 
             currentAttackCount++;
         }
+    }
+
+    public override void PreJump()
+    {
+        base.PreJump();
+        bossJumpState.PreJump();
     }
 
     public override void Jump()

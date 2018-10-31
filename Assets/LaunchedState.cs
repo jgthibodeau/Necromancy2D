@@ -14,6 +14,8 @@ public class LaunchedState : FSMState
     private bool launched = false;
 
     public GameObject explosionPrefab;
+
+    public Collider2D launchedCollider;
     
     void Awake()
     {
@@ -21,6 +23,18 @@ public class LaunchedState : FSMState
         controller = GetComponent<EntityController>();
         aiController = GetComponent<AiController>();
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    public override void DoBeforeEntering()
+    {
+        base.DoBeforeEntering();
+        launchedCollider.enabled = true;
+    }
+
+    public override void DoBeforeLeaving()
+    {
+        base.DoBeforeLeaving();
+        launchedCollider.enabled = false;
     }
 
     public override void Reason(GameObject npc)

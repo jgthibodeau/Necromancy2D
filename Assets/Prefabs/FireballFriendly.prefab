@@ -292,7 +292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instanceableType: 0
   invincible: 0
-  lifeTimeInSeconds: 30
+  lifeTimeInSeconds: 0.75
   remainingLifeTime: 0
   ps: {fileID: 0}
   deathTimeInSeconds: 0

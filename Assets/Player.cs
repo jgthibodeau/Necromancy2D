@@ -192,6 +192,8 @@ public class Player : MonoBehaviour
     }
 
     private bool attacking;
+    private bool attackTriggered;
+    public bool useAttackTime;
     public float attackTime;
     void Attack()
     {
@@ -211,12 +213,42 @@ public class Player : MonoBehaviour
         //    }
         //}
 
-        if (Util.GetButton("Attack") && !aiming && attackDelay <= 0 && summonCircle.HasSummons())
+
+
+        //if (Util.GetButton("Attack"))
+        //{
+        //    if (!attackTriggered && !attacking)
+        //    {
+        //        attacking = true;
+        //        attackTriggered = true;
+        //    }
+        //    else
+        //    {
+        //        attacking = true;
+        //        attackTriggered = false;
+        //    }
+        //}
+        //else
+        //{
+        //    attacking = false;
+        //    attackTriggered = false;
+        //}
+
+
+
+
+        if (Util.GetButton("Attack") && !attackTriggered && !aiming && attackDelay <= 0 && summonCircle.HasSummons())
         {
+            attackTriggered = true;
             animator.SetTrigger("Attack");
             attackDelay = attackRate;
             screenShake.Shake(attackShakeTime, attackShakeScale);
             Swarm();
+        }
+        if (/*!useAttackTime && */!attacking && !Util.GetButton("Attack"))
+        {
+            summonCircle.StopAttack();
+            attackTriggered = false;
         }
     }
 
@@ -235,20 +267,22 @@ public class Player : MonoBehaviour
 
         attacking = true;
         summonCircle.Attack();
-        StartCoroutine(WaitForAttack());
+        if (useAttackTime)
+        {
+            StartCoroutine(WaitForAttack());
+        }
     }
 
     IEnumerator WaitForAttack()
     {
         yield return new WaitForSeconds(attackTime);
-        summonCircle.StopAttack();
-        attacking = false ;
+        attacking = false;
     }
 
     void MovePlayer()
     {
-        if (!attacking)
-        {
+        //if (!attacking)
+        //{
             Dash();
             if (!dashing)
             {
@@ -262,13 +296,13 @@ public class Player : MonoBehaviour
             //{
             //    controller.RotateTowards(summonCircle.transform);
             //}
-        }
+        //}
         //else
         //{
         //    controller.SetMoveDirection(Vector2.zero);
         //}
         //if mouse outside of summon area that is populated with minions
-        if (!summonCircle.IsMouseInSummonSpots() && !aiming)
+        if (!aiming)
         {
             controller.RotateTowards(summonCircle.transform);
         }

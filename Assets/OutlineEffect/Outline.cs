@@ -44,6 +44,7 @@ namespace cakeslice
 
         private void Awake()
         {
+            color = -1;
             Renderer = GetComponent<Renderer>();
         }
 
@@ -51,16 +52,22 @@ namespace cakeslice
         {
             if (this.color != color)
             {
-                this.color = color;
                 Reset();
+                this.color = color;
                 Setup();
             }
         }
 
-        void OnEnable()
+        public void RemoveColor()
         {
-            Setup();
+            color = -1;
+            Reset();
         }
+
+        //void OnEnable()
+        //{
+        //    Setup();
+        //}
 
         void Setup()
         {
@@ -74,10 +81,10 @@ namespace cakeslice
             }
         }
 
-        void OnDisable()
-        {
-            Reset();
-        }
+        //void OnDisable()
+        //{
+        //    Reset();
+        //}
 
         void Reset()
         {

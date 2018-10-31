@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Health : MonoBehaviour
 {
     private LevelManager levelManager;
+    private Rigidbody2D rb;
+
     public bool invincible = false;
     public float maxHealth = 100;
     public float resurrectHealth = 50;
@@ -40,10 +43,13 @@ public class Health : MonoBehaviour
     public Renderer mainRenderer;
     public Material flashMaterial;
 
-    void Start() {
+    public float knockBackForce;
+
+    public virtual void Start() {
         //		Reset ();
         //		respawnable = GetComponent<Respawnable> ();
         levelManager = LevelManager.instance;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -63,15 +69,21 @@ public class Health : MonoBehaviour
         destroyOnDeath = !alwaysResurrectable;
     }
 
-	public void Hit(float damage, GameObject hitter) {
+	public virtual void Hit(float damage, GameObject hitter)
+    {
         TakeDamage(damage);
-	}
+        if (knockBackForce > 0 && !IsDead())
+        {
+            Vector2 force = (transform.position - hitter.transform.position).normalized;
+            rb.AddForce(force * knockBackForce, ForceMode2D.Impulse);
+        }
+    }
     
 	public void Heal(float amount) {
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
 	}
     
-	public void TakeDamage(float damage) {
+	private void TakeDamage(float damage) {
         if (IsDead() || IsInvincible())
         {
             return;
@@ -98,14 +110,19 @@ public class Health : MonoBehaviour
             Kill ();
 		} else
         {
-            currentFlashTime = flashTime;
-            if (!isFlashing)
-            {
-                isFlashing = true;
-                StartCoroutine(Flash());
-            }
+            StartFlash();
         }
 	}
+
+    protected void StartFlash()
+    {
+        currentFlashTime = flashTime;
+        if (!isFlashing)
+        {
+            isFlashing = true;
+            StartCoroutine(Flash());
+        }
+    }
 
     IEnumerator Flash()
     {

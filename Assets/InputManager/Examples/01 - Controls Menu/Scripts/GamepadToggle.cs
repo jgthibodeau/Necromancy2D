@@ -43,12 +43,12 @@ namespace TeamUtility.IO.Examples
 		{
 			if(_gamepadOn)
 			{
-				InputManager.SetInputConfiguration(_gamepadInputConfig, PlayerID.One);
+				InputManager.SetInputConfiguration(_gamepadInputConfig, PlayerID.One, InputDevice.Joystick);
 				_status.text = "Gamepad: On";
 			}
 			else
 			{
-				InputManager.SetInputConfiguration(_keyboardInputConfig, PlayerID.One);
+				InputManager.SetInputConfiguration(_keyboardInputConfig, PlayerID.One, InputDevice.KeyboardAndMouse);
 				_status.text = "Gamepad: Off";
 			}
 		}
@@ -57,13 +57,13 @@ namespace TeamUtility.IO.Examples
 		{
 			if(_gamepadOn)
 			{
-				InputManager.SetInputConfiguration(_keyboardInputConfig, PlayerID.One);
+				InputManager.SetInputConfiguration(_keyboardInputConfig, PlayerID.One, InputDevice.KeyboardAndMouse);
 				_status.text = "Gamepad: Off";
 				_gamepadOn = false;
 			}
 			else
 			{
-				InputManager.SetInputConfiguration(_gamepadInputConfig, PlayerID.One);
+				InputManager.SetInputConfiguration(_gamepadInputConfig, PlayerID.One, InputDevice.Joystick);
 				_status.text = "Gamepad: On";
 				_gamepadOn = true;
 			}

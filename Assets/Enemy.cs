@@ -13,6 +13,8 @@ using cakeslice;
 [RequireComponent(typeof(DeadState))]
 public abstract class Enemy : MonoBehaviour
 {
+    public bool alerted;
+
     public FSMSystem fsm;
     public StateID initialState;
     [SerializeField]
@@ -29,7 +31,8 @@ public abstract class Enemy : MonoBehaviour
     public SummonCircle summonCircle;
     private EntityController controller;
     private Health health;
-    private Outline outline;
+    public Outline aliveOutline;
+    public Outline deadOutline;
     public Rigidbody2D rigidBody;
 
     public int enemyLayer;
@@ -44,8 +47,7 @@ public abstract class Enemy : MonoBehaviour
     public LayerMask allyTargetLayers;
 
     protected LayerMask currentTargetLayers;
-
-    public Animator defaultAnimator;
+    
     private Animator aliveAnimator;
     private Animator deadAnimator;
     public Animator currentAnimator;
@@ -119,14 +121,11 @@ public abstract class Enemy : MonoBehaviour
     {
         controller = GetComponent<EntityController>();
         health = GetComponent<Health>();
-        outline = aliveGraphics.GetComponentInChildren<Outline>();
+        aliveOutline = aliveGraphics.GetComponentInChildren<Outline>();
+        deadOutline = deadGraphics.GetComponentInChildren<Outline>();
         rigidBody = GetComponent<Rigidbody2D>();
 
         audioSource = GetComponent<AudioSource>();
-        if (defaultAnimator == null)
-        {
-            defaultAnimator = GetComponentInChildren<Animator>();
-        }
 
         aliveAnimator = aliveGraphics.GetComponentInChildren<Animator>();
         deadAnimator = deadGraphics.GetComponentInChildren<Animator>();
@@ -209,15 +208,40 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public void SetOutlineColor(int c)
+    public void SetAliveOutlineColor(int c)
     {
-        if (outline != null)
+        if (aliveOutline == null)
         {
-            outline.SetColor(c);
-        } else
-        {
-            outline = aliveGraphics.GetComponentInChildren<Outline>();
+            aliveOutline = aliveGraphics.GetComponentInChildren<Outline>();
         }
+        aliveOutline.SetColor(c);
+    }
+
+    public void SetDeadOutlineColor(int c)
+    {
+        if (deadOutline == null)
+        {
+            deadOutline = deadGraphics.GetComponentInChildren<Outline>();
+        }
+        deadOutline.SetColor(c);
+    }
+
+    public void RemoveAliveOutlineColor()
+    {
+        if (aliveOutline == null)
+        {
+            aliveOutline = aliveGraphics.GetComponentInChildren<Outline>();
+        }
+        aliveOutline.RemoveColor();
+    }
+
+    public void RemoveDeadOutlineColor()
+    {
+        if (deadOutline == null)
+        {
+            deadOutline = deadGraphics.GetComponentInChildren<Outline>();
+        }
+        deadOutline.RemoveColor();
     }
 
     void SetAnimator(Animator a)
@@ -237,6 +261,7 @@ public abstract class Enemy : MonoBehaviour
         SetSummonSpot(summonSpot);
     }
 
+    public virtual void PreJump() { }
     public virtual void Jump() { }
     public virtual void Land() { }
     public virtual void StopLand() { }
@@ -250,6 +275,11 @@ public abstract class Enemy : MonoBehaviour
     {
         Debug.Log("Setting ally speed " + allySpeed);
         allyState.speed = allySpeed;
+    }
+
+    public void SetAcceleration(float acceleration)
+    {
+        controller.acceleration = acceleration;
     }
 
     public void SetAllyAttack(bool attack)

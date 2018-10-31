@@ -61,6 +61,11 @@ public class Util : MonoBehaviour {
 		return direction + pivot; // calculate rotated point
 	}
 
+    public static TeamUtility.IO.InputDevice GetCurrentInputDeviceType()
+    {
+        return TeamUtility.IO.InputManager.Instance.currentInputDeviceType;
+    }
+
 	public static float GetAxis(string axis){
 		return TeamUtility.IO.InputManager.GetAxis (axis);
 	}

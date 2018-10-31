@@ -583,19 +583,19 @@ namespace TeamUtility.IO
 			}
 		}
 		
-		private void SetInputDevice(InputDevice inpuDevice)
+		private void SetInputDevice(InputDevice inputDevice)
 		{
-			_inputDevice = inpuDevice;
-			if(inpuDevice == InputDevice.Joystick)
+			_inputDevice = inputDevice;
+			if(inputDevice == InputDevice.Joystick)
 			{
 				Cursor.visible = false;
-				InputManager.SetInputConfiguration(_joystickConfiguration, PlayerID.One);
+				InputManager.SetInputConfiguration(_joystickConfiguration, PlayerID.One, inputDevice);
 				Debug.Log("Current Input Device: Joystick");
 			}
 			else
 			{
 				Cursor.visible = true;
-				InputManager.SetInputConfiguration(_keyboardConfiguration, PlayerID.One);
+				InputManager.SetInputConfiguration(_keyboardConfiguration, PlayerID.One, inputDevice);
 				Debug.Log("Current Input Device: KeyboardAndMouse");
 			}
             ResetInputAxes();

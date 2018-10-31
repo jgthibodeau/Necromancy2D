@@ -21,12 +21,15 @@ public class EnemyLauncher : MonoBehaviour {
     public Gradient medForce;
     public Gradient bigForce;
 
+    public SummonCircle summonCircle;
+
     [Range(0, 1)]
     public float launchTimeScale;
 
     void Update()
     {
-        mouse = Util.MouseInWorld();
+        //mouse = Util.MouseInWorld();
+        mouse = summonCircle.transform.position;
         DebugExtension.DebugWireSphere(mouse, Color.yellow, mouseRadius);
 
         if (!MyGameManager.instance.isPaused)

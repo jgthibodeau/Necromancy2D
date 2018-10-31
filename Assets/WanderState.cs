@@ -33,6 +33,18 @@ public class WanderState : FSMState
         player = MyGameManager.instance.GetPlayer().transform;
         playerHealth = player.GetComponentInChildren<Health>();
     }
+    
+    public override void DoBeforeEntering()
+    {
+        base.DoBeforeEntering();
+        enemy.alerted = false;
+    }
+
+    public override void DoBeforeLeaving()
+    {
+        base.DoBeforeLeaving();
+        enemy.alerted = true;
+    }
 
     public override void Reason(GameObject npc)
     {

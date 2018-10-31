@@ -61,7 +61,8 @@ public enum Transition
     CooldownFinished,
     BossJump,
     BossSummon,
-    BossLaunch
+    BossLaunch,
+    Weakened
 }
 
 /// <summary>
@@ -79,7 +80,8 @@ public enum StateID
     CoolDown,
     BossJump,
     BossSummon,
-    BossLaunch
+    BossLaunch,
+    Weak
 }
 
 /// <summary>

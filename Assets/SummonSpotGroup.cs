@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SummonSpotGroup : MonoBehaviour {
-    public float moveSpeed;
+public class SummonSpotGroup : MonoBehaviour
+{
+    public float moveSpeed = 70;
+    public float acceleration = 10;
 
     public SummonSpotRow[] summonSpotRows;
     private List<SummonSpot> summonSpots = new List<SummonSpot>();
@@ -71,6 +73,7 @@ public class SummonSpotGroup : MonoBehaviour {
         if (enemy != null)
         {
             enemy.SetAllySpeed(moveSpeed);
+            enemy.SetAcceleration(acceleration);
         }
     }
 

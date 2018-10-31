@@ -40,13 +40,13 @@ public class AllyState : FSMState
     public override void DoBeforeEntering()
     {
         base.DoBeforeEntering();
-        enemy.SetOutlineColor(1);
+        enemy.SetAliveOutlineColor(1);
     }
 
     public override void DoBeforeLeaving()
     {
         base.DoBeforeLeaving();
-        enemy.SetOutlineColor(1);
+        enemy.RemoveAliveOutlineColor();
     }
 
     public override void Reason(GameObject npc)

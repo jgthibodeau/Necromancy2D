@@ -4335,6 +4335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb91bdba6520fd248bbc41b14d02e9a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentInputDeviceType: 0
   _inputConfigurations:
   - name: KeyboardAndMouse
     axes:
@@ -4356,6 +4357,34 @@ MonoBehaviour:
       description: Move %Up%Down
       positive: 119
       negative: 115
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1000
+      sensitivity: 3
+      snap: 1
+      invert: 0
+      type: 2
+      axis: 0
+      joystick: 0
+    - name: Horizontal Right
+      description: Summon Circle %Right%Left
+      positive: 275
+      negative: 276
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1000
+      sensitivity: 3
+      snap: 1
+      invert: 0
+      type: 2
+      axis: 0
+      joystick: 0
+    - name: Vertical Right
+      description: Summon Circle %Up%Down
+      positive: 273
+      negative: 274
       altPositive: 0
       altNegative: 0
       deadZone: 0
@@ -4571,7 +4600,7 @@ MonoBehaviour:
       negative: 0
       altPositive: 0
       altNegative: 0
-      deadZone: 0.2
+      deadZone: 0.1
       gravity: 0
       sensitivity: 1
       snap: 0
@@ -4585,7 +4614,7 @@ MonoBehaviour:
       negative: 0
       altPositive: 0
       altNegative: 0
-      deadZone: 0.2
+      deadZone: 0.1
       gravity: 0
       sensitivity: 1
       snap: 0
@@ -4620,6 +4649,76 @@ MonoBehaviour:
       invert: 0
       type: 3
       axis: 6
+      joystick: 0
+    - name: Attack
+      description: Minion Attack
+      positive: 355
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 0
+      sensitivity: 0
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: Launch
+      description: Launch Minion
+      positive: 355
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 0
+      sensitivity: 0
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: Shield
+      description: Circle Formation
+      positive: 354
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 0
+      sensitivity: 0
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: Aim
+      description: Allow Minion Launching
+      positive: 354
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 0
+      sensitivity: 0
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: Dash
+      description: Dash
+      positive: 350
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 0
+      sensitivity: 0
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
       joystick: 0
     - name: Pause
       description: Pause
@@ -4663,22 +4762,8 @@ MonoBehaviour:
       type: 0
       axis: 0
       joystick: 0
-    - name: Thrust
-      description: Reverse Gravity
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 8
-      joystick: 0
-    - name: Gravity
-      description: Gravity
+    - name: Summon
+      description: Minion Attack
       positive: 0
       negative: 0
       altPositive: 0
@@ -4690,6 +4775,20 @@ MonoBehaviour:
       invert: 0
       type: 3
       axis: 9
+      joystick: 0
+    - name: CorpseExplosion
+      description: Corpse Explosion
+      positive: 0
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 3
+      axis: 8
       joystick: 0
     - name: DPADHorizontal
       description: DPAD Horizontal
@@ -7492,7 +7591,11 @@ MonoBehaviour:
     While in a circle, use the Left Mouse button to slingshot your minions at enemies.
 
 
-    If you have no minions, hold the Space Bar to summon some skeletons.'
+    If you have no minions, hold the Space Bar to summon some skeletons.
+
+
+    The biggest skeleton must be damaged by explosions before he can be hit with anything
+    else.'
 --- !u!114 &114636653261967170
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7839,7 +7942,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1877498312103226}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
@@ -7852,7 +7955,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: c357b906baf44924e83e86c046ca94ff, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

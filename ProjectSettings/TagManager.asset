@@ -18,6 +18,7 @@ TagManager:
   - Breadcrumb
   - Bullet
   - Highlightable
+  - UI Fill
   layers:
   - Default
   - TransparentFX
@@ -44,7 +45,7 @@ TagManager:
   - FriendlyProjectile
   - EnemyProjectile
   - EnemyExplosion
-  - 
+  - EnemyExplosionOnly
   - 
   - 
   - 

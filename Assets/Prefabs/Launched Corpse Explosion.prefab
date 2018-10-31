@@ -236,7 +236,7 @@ MonoBehaviour:
   splashDamage: 1
   layermask:
     serializedVersion: 2
-    m_Bits: 33792
+    m_Bits: 33588224
   healths: []
 --- !u!114 &114758749684648470
 MonoBehaviour:
@@ -3915,13 +3915,13 @@ ParticleSystem:
         m_RotationOrder: 4
     maxLights: 20
   TrailModule:
-    enabled: 0
+    enabled: 1
     mode: 0
     ratio: 1
     lifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -8379,13 +8379,13 @@ ParticleSystem:
         m_RotationOrder: 4
     maxLights: 20
   TrailModule:
-    enabled: 0
+    enabled: 1
     mode: 0
     ratio: 1
     lifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -9207,7 +9207,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: a0cec58fc32f482418596ffdf7c0d693, type: 2}
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 7a474fad7982a8e42af709db5f90c4f6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9264,7 +9264,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: a0cec58fc32f482418596ffdf7c0d693, type: 2}
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 7a474fad7982a8e42af709db5f90c4f6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
