@@ -67,6 +67,12 @@ public class EntityController : MonoBehaviour
         this.speedScale = 1f;
     }
 
+    public void FullStop()
+    {
+        Stop();
+        rb.velocity = Vector2.zero;
+    }
+
     void FixedUpdate()
     {
         Move();

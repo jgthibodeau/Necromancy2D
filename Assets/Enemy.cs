@@ -59,6 +59,9 @@ public abstract class Enemy : MonoBehaviour
 
     public GameObject corpseExplosionPrefab;
 
+    public Animator attackFlash;
+    private Vector3 attackFlashRotation;
+
     void Awake ()
     {
         RetreiveScripts();
@@ -146,9 +149,22 @@ public abstract class Enemy : MonoBehaviour
     {
         return fsm.CurrentStateID == StateID.Wander || fsm.CurrentStateID == StateID.Chase;
     }
+    
+    void Update()
+    {
+        //if (lifeState == LIFE_STATE.DEAD)
+        if (fsm.CurrentStateID == StateID.Dead)
+        {
+            StopAttack();
+        }
+        attackFlash.transform.eulerAngles = attackFlashRotation;
+
+        currentAnimator.SetBool("Ally", currentState == StateID.Ally);
+    }
 
     public virtual void FixedUpdate() {
         currentState = fsm.CurrentStateID;
+
         if (health.currentHealth <= 0)
         {
             SetTransition(Transition.Dead);
@@ -311,6 +327,15 @@ public abstract class Enemy : MonoBehaviour
         currentAnimator.SetTrigger("Attack");
         audioSource.pitch = Random.Range(minAttackPitch, maxAttackPitch);
         audioSource.Play();
+    }
+
+    public virtual void TelegraphAttack() {
+        if (fsm.CurrentStateID != StateID.Ally)
+        {
+            Debug.Log("Flashing");
+            attackFlash.SetTrigger("Flash");
+            attackFlashRotation = new Vector3(0, 0, Random.Range(0, 360));
+        }
     }
 
     public virtual void StartAttack() { }

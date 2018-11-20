@@ -25,7 +25,6 @@ public class MyGameManager : MonoBehaviour
 		if (instance == null) {
 			instance = this;
             instanceMap = new Dictionary<InstanceableType, List<GameObject>> ();
-
         } else if (instance != this) {
 			Destroy (gameObject);
 		}

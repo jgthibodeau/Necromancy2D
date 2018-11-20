@@ -7,15 +7,6 @@ public class MeleeEnemy : Enemy {
     public WeaponCollider weaponCollider;
     public WeaponCollider allyWeaponCollider;
 
-    void Update()
-    {
-        //if (lifeState == LIFE_STATE.DEAD)
-        if (fsm.CurrentStateID == StateID.Dead)
-        {
-            StopAttack();
-        }
-    }
-
     public override void StartAttack()
     {
         StopAttack();

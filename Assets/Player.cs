@@ -195,6 +195,7 @@ public class Player : MonoBehaviour
     private bool attackTriggered;
     public bool useAttackTime;
     public float attackTime;
+    public bool freezeDuringAttack;
     void Attack()
     {
         if (attackDelay > 0)
@@ -302,10 +303,15 @@ public class Player : MonoBehaviour
         //    controller.SetMoveDirection(Vector2.zero);
         //}
         //if mouse outside of summon area that is populated with minions
-        if (!aiming)
+        if (CanRotate())
         {
             controller.RotateTowards(summonCircle.transform);
         }
+    }
+
+    private bool CanRotate()
+    {
+        return !(aiming || (freezeDuringAttack && attacking));
     }
 
     bool alreadyDead = false;

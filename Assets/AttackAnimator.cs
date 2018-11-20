@@ -10,11 +10,16 @@ public class AttackAnimator : MonoBehaviour {
         enemy = GetComponentInParent<Enemy>();
     }
 
+    public void TelegraphAttack()
+    {
+        enemy.TelegraphAttack();
+    }
+
     public void StartAttack()
     {
         enemy.StartAttack();
     }
-	
+
     public void StopAttack()
     {
         enemy.StopAttack();

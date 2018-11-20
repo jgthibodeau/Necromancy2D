@@ -88,13 +88,22 @@ public class Util : MonoBehaviour {
     {
         Camera camera = Camera.main;
         Vector3 mouse = TeamUtility.IO.InputManager.mousePosition;
-        if (!camera.orthographic)
+        //if (!camera.orthographic)
+        //{
+        //    //mouse.z = camera.farClipPlane;
+        //    mouse.z = -camera.transform.position.z;
+        //}
+        //mouse = camera.ScreenToWorldPoint(mouse);
+        //mouse.z = 0;
+        //return mouse;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 10000, LayerMask.GetMask("Ground")))
         {
-            //mouse.z = camera.farClipPlane;
-            mouse.z = -camera.transform.position.z;
+            mouse = hit.point;
+            mouse.z = 0;
         }
-        mouse = camera.ScreenToWorldPoint(mouse);
-        mouse.z = 0;
         return mouse;
     }
 

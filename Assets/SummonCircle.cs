@@ -10,7 +10,8 @@ public class SummonCircle : MonoBehaviour {
     private OutlineController outlineController;
     private Player player;
     public Image skeletonSummonImage;
-    public TextMeshProUGUI text;
+
+    public SummonCount summonCount;
 
     public FadeAudio fadeAudio;
     
@@ -154,8 +155,8 @@ public class SummonCircle : MonoBehaviour {
     Enemy previousClosestCorpse;
     void Update ()
     {
-        string summonText = SummonCount() + " / " + maxSummonsPerGroup[0];
-        text.SetText(summonText);
+        summonCount.maxSummons = maxSummonsPerGroup[0];
+        summonCount.SetSummonCount(SummonCount());
 
         //GenerateSummonSpots();
         MoveSummonCircle();
@@ -169,16 +170,13 @@ public class SummonCircle : MonoBehaviour {
         //{
         //    SetSummonSpotGroup(1);
         //}
-        if (!attacking)
+        if (Util.GetButton("Shield"))
         {
-            if (Util.GetButton("Shield"))
-            {
-                SetSummonSpotGroup(1, false);
-            }
-            else
-            {
-                SetSummonSpotGroup(0, false);
-            }
+            SetSummonSpotGroup(1, attacking);
+        }
+        else
+        {
+            SetSummonSpotGroup(0, attacking);
         }
 
         if (!player.IsDead())
